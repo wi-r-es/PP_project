@@ -303,8 +303,8 @@ class Yylex {
                 case 1:
                     throw new ParseException(this.yychar, 0, new Character(this.yycharat(0)));
                 case 2:
-                    Long val = Long.valueOf(this.yytext());
-                    return new Yytoken(0, val);
+                    Long val_case2 = Long.valueOf(this.yytext());
+                    return new Yytoken(0, val_case2);
                 case 3:
                 case 25:
                 case 26:
@@ -378,13 +378,13 @@ class Yylex {
                     this.sb.append('\t');
                     break;
                 case 21:
-                    Double val = Double.valueOf(this.yytext());
-                    return new Yytoken(0, val);
+                    Double valcase21 = Double.valueOf(this.yytext());
+                    return new Yytoken(0, valcase21);
                 case 22:
                     return new Yytoken(0, (Object)null);
                 case 23:
-                    Boolean val = Boolean.valueOf(this.yytext());
-                    return new Yytoken(0, val);
+                    Boolean val_case23 = Boolean.valueOf(this.yytext());
+                    return new Yytoken(0, val_case23);
                 case 24:
                     try {
                         ch = Integer.parseInt(this.yytext().substring(2), 16);

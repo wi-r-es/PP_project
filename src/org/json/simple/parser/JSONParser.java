@@ -18,7 +18,7 @@ public class JSONParser {
     public static final int S_IN_PAIR_VALUE = 5;
     public static final int S_END = 6;
     public static final int S_IN_ERROR = -1;
-    private LinkedList handlerStatusStack;
+    private LinkedList<Integer> handlerStatusStack;
     private Yylex lexer = new Yylex((Reader)null);
     private Yytoken token = null;
     private int status = 0;
@@ -26,12 +26,11 @@ public class JSONParser {
     public JSONParser() {
     }
 
-    private int peekStatus(LinkedList statusStack) {
+    private int peekStatus(LinkedList<Integer> statusStack) {
         if (statusStack.size() == 0) {
             return -1;
         } else {
-            Integer status = (Integer)statusStack.getFirst();
-            return status;
+            return statusStack.getFirst();
         }
     }
 
@@ -70,156 +69,152 @@ public class JSONParser {
 
     public Object parse(Reader in, ContainerFactory containerFactory) throws IOException, ParseException {
         this.reset(in);
-        LinkedList statusStack = new LinkedList();
+        LinkedList<Integer> statusStack = new LinkedList<Integer>();
         LinkedList valueStack = new LinkedList();
 
-        try {
-            do {
-                this.nextToken();
-                String key;
-                Map parent;
-                List newArray;
-                label67:
-                switch(this.status) {
-                    case -1:
-                        throw new ParseException(this.getPosition(), 1, this.token);
-                    case 0:
-                        switch(this.token.type) {
-                            case 0:
-                                this.status = 1;
-                                statusStack.addFirst(new Integer(this.status));
-                                valueStack.addFirst(this.token.value);
-                                break label67;
-                            case 1:
-                                this.status = 2;
-                                statusStack.addFirst(new Integer(this.status));
-                                valueStack.addFirst(this.createObjectContainer(containerFactory));
-                                break label67;
-                            case 2:
-                            default:
-                                this.status = -1;
-                                break label67;
-                            case 3:
-                                this.status = 3;
-                                statusStack.addFirst(new Integer(this.status));
-                                valueStack.addFirst(this.createArrayContainer(containerFactory));
-                                break label67;
-                        }
-                    case 1:
-                        if (this.token.type == -1) {
-                            return valueStack.removeFirst();
-                        }
-
-                        throw new ParseException(this.getPosition(), 1, this.token);
-                    case 2:
-                        switch(this.token.type) {
-                            case 0:
-                                if (this.token.value instanceof String) {
-                                    key = (String)this.token.value;
-                                    valueStack.addFirst(key);
-                                    this.status = 4;
-                                    statusStack.addFirst(new Integer(this.status));
-                                } else {
-                                    this.status = -1;
-                                }
-                                break label67;
-                            case 2:
-                                if (valueStack.size() > 1) {
-                                    statusStack.removeFirst();
-                                    valueStack.removeFirst();
-                                    this.status = this.peekStatus(statusStack);
-                                } else {
-                                    this.status = 1;
-                                }
-                            case 5:
-                                break label67;
-                            default:
-                                this.status = -1;
-                                break label67;
-                        }
-                    case 3:
-                        List val;
-                        switch(this.token.type) {
-                            case 0:
-                                val = (List)valueStack.getFirst();
-                                val.add(this.token.value);
-                                break label67;
-                            case 1:
-                                val = (List)valueStack.getFirst();
-                                parent = this.createObjectContainer(containerFactory);
-                                val.add(parent);
-                                this.status = 2;
-                                statusStack.addFirst(new Integer(this.status));
-                                valueStack.addFirst(parent);
-                                break label67;
-                            case 2:
-                            default:
-                                this.status = -1;
-                                break label67;
-                            case 3:
-                                val = (List)valueStack.getFirst();
-                                newArray = this.createArrayContainer(containerFactory);
-                                val.add(newArray);
-                                this.status = 3;
-                                statusStack.addFirst(new Integer(this.status));
-                                valueStack.addFirst(newArray);
-                                break label67;
-                            case 4:
-                                if (valueStack.size() > 1) {
-                                    statusStack.removeFirst();
-                                    valueStack.removeFirst();
-                                    this.status = this.peekStatus(statusStack);
-                                } else {
-                                    this.status = 1;
-                                }
-                            case 5:
-                                break label67;
-                        }
-                    case 4:
-                        switch(this.token.type) {
-                            case 0:
-                                statusStack.removeFirst();
-                                key = (String)valueStack.removeFirst();
-                                parent = (Map)valueStack.getFirst();
-                                parent.put(key, this.token.value);
-                                this.status = this.peekStatus(statusStack);
-                                break;
-                            case 1:
-                                statusStack.removeFirst();
-                                key = (String)valueStack.removeFirst();
-                                parent = (Map)valueStack.getFirst();
-                                Map newObject = this.createObjectContainer(containerFactory);
-                                parent.put(key, newObject);
-                                this.status = 2;
-                                statusStack.addFirst(new Integer(this.status));
-                                valueStack.addFirst(newObject);
-                                break;
-                            case 2:
-                            case 4:
-                            case 5:
-                            default:
-                                this.status = -1;
-                                break;
-                            case 3:
-                                statusStack.removeFirst();
-                                key = (String)valueStack.removeFirst();
-                                parent = (Map)valueStack.getFirst();
-                                newArray = this.createArrayContainer(containerFactory);
-                                parent.put(key, newArray);
-                                this.status = 3;
-                                statusStack.addFirst(new Integer(this.status));
-                                valueStack.addFirst(newArray);
-                            case 6:
-                        }
-                }
-
-                if (this.status == -1) {
+        do {
+            this.nextToken();
+            String key;
+            Map parent;
+            List newArray;
+            label67:
+            switch(this.status) {
+                case -1:
                     throw new ParseException(this.getPosition(), 1, this.token);
-                }
-            } while(this.token.type != -1);
-        } catch (IOException var9) {
-            throw var9;
-        }
+                case 0:
+                    switch(this.token.type) {
+                        case 0:
+                            this.status = 1;
+                            statusStack.addFirst(this.status);
+                            valueStack.addFirst(this.token.value);
+                            break label67;
+                        case 1:
+                            this.status = 2;
+                            statusStack.addFirst(this.status);
+                            valueStack.addFirst(this.createObjectContainer(containerFactory));
+                            break label67;
+                        case 2:
+                        default:
+                            this.status = -1;
+                            break label67;
+                        case 3:
+                            this.status = 3;
+                            statusStack.addFirst(this.status);
+                            valueStack.addFirst(this.createArrayContainer(containerFactory));
+                            break label67;
+                    }
+                case 1:
+                    if (this.token.type == -1) {
+                        return valueStack.removeFirst();
+                    }
+
+                    throw new ParseException(this.getPosition(), 1, this.token);
+                case 2:
+                    switch(this.token.type) {
+                        case 0:
+                            if (this.token.value instanceof String) {
+                                key = (String)this.token.value;
+                                valueStack.addFirst(key);
+                                this.status = 4;
+                                statusStack.addFirst(this.status);
+                            } else {
+                                this.status = -1;
+                            }
+                            break label67;
+                        case 2:
+                            if (valueStack.size() > 1) {
+                                statusStack.removeFirst();
+                                valueStack.removeFirst();
+                                this.status = this.peekStatus(statusStack);
+                            } else {
+                                this.status = 1;
+                            }
+                        case 5:
+                            break label67;
+                        default:
+                            this.status = -1;
+                            break label67;
+                    }
+                case 3:
+                    List val;
+                    switch(this.token.type) {
+                        case 0:
+                            val = (List)valueStack.getFirst();
+                            val.add(this.token.value);
+                            break label67;
+                        case 1:
+                            val = (List)valueStack.getFirst();
+                            parent = this.createObjectContainer(containerFactory);
+                            val.add(parent);
+                            this.status = 2;
+                            statusStack.addFirst(this.status);
+                            valueStack.addFirst(parent);
+                            break label67;
+                        case 2:
+                        default:
+                            this.status = -1;
+                            break label67;
+                        case 3:
+                            val = (List)valueStack.getFirst();
+                            newArray = this.createArrayContainer(containerFactory);
+                            val.add(newArray);
+                            this.status = 3;
+                            statusStack.addFirst(this.status);
+                            valueStack.addFirst(newArray);
+                            break label67;
+                        case 4:
+                            if (valueStack.size() > 1) {
+                                statusStack.removeFirst();
+                                valueStack.removeFirst();
+                                this.status = this.peekStatus(statusStack);
+                            } else {
+                                this.status = 1;
+                            }
+                        case 5:
+                            break label67;
+                    }
+                case 4:
+                    switch(this.token.type) {
+                        case 0:
+                            statusStack.removeFirst();
+                            key = (String)valueStack.removeFirst();
+                            parent = (Map)valueStack.getFirst();
+                            parent.put(key, this.token.value);
+                            this.status = this.peekStatus(statusStack);
+                            break;
+                        case 1:
+                            statusStack.removeFirst();
+                            key = (String)valueStack.removeFirst();
+                            parent = (Map)valueStack.getFirst();
+                            Map newObject = this.createObjectContainer(containerFactory);
+                            parent.put(key, newObject);
+                            this.status = 2;
+                            statusStack.addFirst(this.status);
+                            valueStack.addFirst(newObject);
+                            break;
+                        case 2:
+                        case 4:
+                        case 5:
+                        default:
+                            this.status = -1;
+                            break;
+                        case 3:
+                            statusStack.removeFirst();
+                            key = (String)valueStack.removeFirst();
+                            parent = (Map)valueStack.getFirst();
+                            newArray = this.createArrayContainer(containerFactory);
+                            parent.put(key, newArray);
+                            this.status = 3;
+                            statusStack.addFirst(this.status);
+                            valueStack.addFirst(newArray);
+                        case 6:
+                    }
+            }
+
+            if (this.status == -1) {
+                throw new ParseException(this.getPosition(), 1, this.token);
+            }
+        } while(this.token.type != -1);
 
         throw new ParseException(this.getPosition(), 1, this.token);
     }
@@ -271,14 +266,14 @@ public class JSONParser {
     public void parse(Reader in, ContentHandler contentHandler, boolean isResume) throws IOException, ParseException {
         if (!isResume) {
             this.reset(in);
-            this.handlerStatusStack = new LinkedList();
+            this.handlerStatusStack = new LinkedList<>();
         } else if (this.handlerStatusStack == null) {
             isResume = false;
             this.reset(in);
-            this.handlerStatusStack = new LinkedList();
+            this.handlerStatusStack = new LinkedList<>();
         }
 
-        LinkedList statusStack = this.handlerStatusStack;
+        LinkedList<Integer> statusStack = this.handlerStatusStack;
 
         try {
             do {
@@ -292,14 +287,14 @@ public class JSONParser {
                         switch(this.token.type) {
                             case 0:
                                 this.status = 1;
-                                statusStack.addFirst(new Integer(this.status));
+                                statusStack.addFirst(this.status);
                                 if (!contentHandler.primitive(this.token.value)) {
                                     return;
                                 }
                                 break label175;
                             case 1:
                                 this.status = 2;
-                                statusStack.addFirst(new Integer(this.status));
+                                statusStack.addFirst(this.status);
                                 if (!contentHandler.startObject()) {
                                     return;
                                 }
@@ -310,7 +305,7 @@ public class JSONParser {
                                 break label175;
                             case 3:
                                 this.status = 3;
-                                statusStack.addFirst(new Integer(this.status));
+                                statusStack.addFirst(this.status);
                                 if (!contentHandler.startArray()) {
                                     return;
                                 }
@@ -333,7 +328,7 @@ public class JSONParser {
                                 if (this.token.value instanceof String) {
                                     String key = (String)this.token.value;
                                     this.status = 4;
-                                    statusStack.addFirst(new Integer(this.status));
+                                    statusStack.addFirst(this.status);
                                     if (!contentHandler.startObjectEntry(key)) {
                                         return;
                                     }
@@ -368,7 +363,7 @@ public class JSONParser {
                                 break label175;
                             case 1:
                                 this.status = 2;
-                                statusStack.addFirst(new Integer(this.status));
+                                statusStack.addFirst(this.status);
                                 if (!contentHandler.startObject()) {
                                     return;
                                 }
@@ -379,7 +374,7 @@ public class JSONParser {
                                 break label175;
                             case 3:
                                 this.status = 3;
-                                statusStack.addFirst(new Integer(this.status));
+                                statusStack.addFirst(this.status);
                                 if (!contentHandler.startArray()) {
                                     return;
                                 }
@@ -414,9 +409,9 @@ public class JSONParser {
                                 break label175;
                             case 1:
                                 statusStack.removeFirst();
-                                statusStack.addFirst(new Integer(5));
+                                statusStack.addFirst(5);
                                 this.status = 2;
-                                statusStack.addFirst(new Integer(this.status));
+                                statusStack.addFirst(this.status);
                                 if (!contentHandler.startObject()) {
                                     return;
                                 }
@@ -429,9 +424,9 @@ public class JSONParser {
                                 break label175;
                             case 3:
                                 statusStack.removeFirst();
-                                statusStack.addFirst(new Integer(5));
+                                statusStack.addFirst(5);
                                 this.status = 3;
-                                statusStack.addFirst(new Integer(this.status));
+                                statusStack.addFirst(this.status);
                                 if (!contentHandler.startArray()) {
                                     return;
                                 }

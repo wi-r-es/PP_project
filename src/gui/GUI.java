@@ -87,7 +87,8 @@ public class GUI {
         }
 
         reader.close();
-        FileWriter file = new FileWriter("temp/gui/index.html");
+
+        file = new FileWriter("temp/gui/index.html");
 
         try {
             file.write(html);

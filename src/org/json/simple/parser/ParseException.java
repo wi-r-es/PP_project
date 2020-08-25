@@ -48,7 +48,7 @@ public class ParseException extends Exception {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         switch(this.errorType) {
             case 0:
                 sb.append("Unexpected character (").append(this.unexpectedObject).append(") at position ").append(this.position).append(".");
