@@ -11,7 +11,7 @@ public class Driver extends Person implements IDriver{
     private LicenseType[] LicenseType;
     private DriverStatus Status;
 
-    public Driver(String id, String name, LocalDate birthDate, IAddress address, LocalDate startingPositionDate, hr.LicenseType[] licenseType, DriverStatus status) {
+    public Driver(Integer id, String name, LocalDate birthDate, IAddress address, LocalDate startingPositionDate, hr.LicenseType[] licenseType, DriverStatus status) {
         super(id, name, birthDate, address);
         StartingPositionDate = startingPositionDate;
         LicenseType = null;

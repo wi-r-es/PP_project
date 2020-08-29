@@ -3,12 +3,12 @@ package hr;
 import java.time.LocalDate;
 
 public class Person implements IPerson {
-    private final String Id;
+    private final Integer Id;
     private final String Name;
     private final LocalDate BirthDate;
     private IAddress Address;
 
-    public Person(String id, String name, LocalDate birthDate, IAddress address) {
+    public Person(Integer id, String name, LocalDate birthDate, IAddress address) {
         Id = id;
         Name = name;
         BirthDate = birthDate;
@@ -17,7 +17,7 @@ public class Person implements IPerson {
 
     @Override
     public String getId() {
-        return Id;
+        return Integer.toString(Id);
     }
 
     @Override

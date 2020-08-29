@@ -8,12 +8,12 @@ import java.io.IOException;
 
 public class Delivery implements IDelivery{
 
-    private String Id;
+    private Integer Id;
     private IVehicle Vehicle;
     private double CurrentWeight;
     private IDriver Driver;
 
-    public Delivery(String id, IVehicle vehicle, double currentWeight, IDriver driver, IPosition position, IItemPacked[] itemsPacked, IItem item) {
+    public Delivery(Integer id, IVehicle vehicle, double currentWeight, IDriver driver, IPosition position, IItemPacked[] itemsPacked, IItem item) {
         Id = id;
         Vehicle = vehicle;
         CurrentWeight = currentWeight;
@@ -29,7 +29,7 @@ public class Delivery implements IDelivery{
 
     @Override
     public String getId() {
-        return this.Id;
+        return Integer.toString(this.Id);
     }
 
     @Override
