@@ -14,11 +14,17 @@ public class Truck extends Vehicle implements ITruck {
         transport.VehicleStatus temp = super.getStatus(); /* is this well coded xD ? */
 
         /* Swap CargoBox if status is free */
-        if( 0)    /* Check this if condition  */
-        {
-            super.setCargoBox(var1);
-            return true;
-        } else return false;
+        switch(temp) {    /* Check this switch condition  */
+            case FREE -> {
+                setCargoBox(var1);
+                return true;
+            }
+            default -> {
+                return false;
+            }
+
+        }
+
 
     }
 }
