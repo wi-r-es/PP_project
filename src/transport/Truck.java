@@ -15,11 +15,11 @@ public class Truck extends Vehicle implements ITruck {
 
         /* Swap CargoBox if status is free */
         switch(temp) {    /* Check this switch condition  */
-            case FREE -> {
+            case FREE: {
                 setCargoBox(var1);
                 return true;
             }
-            default -> {
+            default: {
                 return false;
             }
 

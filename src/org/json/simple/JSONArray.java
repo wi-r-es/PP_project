@@ -22,7 +22,7 @@ public class JSONArray extends ArrayList implements List, JSONAware, JSONStreamA
 
             while(iter.hasNext()) {
                 if (first) {
-                    first = false;
+                     first = false;
                 } else {
                     out.write(44);
                 }
