@@ -13,6 +13,7 @@ public class Item implements IItem {
     private ItemStatus ItemStatus;
     private int Depth;
     private int Height;   /* nao deveria simplesmente dar extend a box e retirava todo o codigo que ja esta em BOX? os dados heigh length etc, e os respetivos set e get?? */
+                          /* nao prk uma coisa é o height / length da box que como já te expliquei é algo estatico, existem várias boxes tu escolhes uma tipo. Outra coisa é esses atributos de cada item dentro da box*/
     private int Length;
     private int Volume;
     private double Weight;

@@ -23,7 +23,7 @@ public class Vehicle implements IVehicle{
 
     @Override
     public LicenseType[] getAllowedLicenses() {
-        return new LicenseType[0];
+        return NeededLicenses;
     }
 
     @Override
@@ -57,12 +57,7 @@ public class Vehicle implements IVehicle{
 
     @Override
     public TransportationTypes[] getTransportationTypes() {
-        return new TransportationTypes[0];
+        return TransportationTypes;
     }
-
-
-
-
-
 
 }
