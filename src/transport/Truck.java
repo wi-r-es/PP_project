@@ -22,9 +22,6 @@ public class Truck extends Vehicle implements ITruck {
             default: {
                 return false;
             }
-
         }
-
-
     }
 }

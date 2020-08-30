@@ -24,7 +24,7 @@ public class ItemPacked extends Item implements IItemPacked{
 
     @Override
     public void setPosition(IPosition var1) {
-        Position = var1;
 
+        Position = var1;
     }
 }
