@@ -8,8 +8,8 @@ public class ItemPacked extends Item implements IItemPacked{
     private IItem Item;
     private IPosition Position;
 
-    public ItemPacked(String reference, String description, transport.TransportationTypes[] transportationTypes, ICustomer customer, IDestination destination, transport.ItemStatus itemStatus, int depth, int height, int length, int volume, double weight) {
-        super(reference, description, transportationTypes, customer, destination, itemStatus, depth, height, length, volume, weight);
+    public ItemPacked(String reference, String description, transport.TransportationTypes[] transportationType, ICustomer customer, IDestination destination, transport.ItemStatus itemStatus, int depth, int height, int length, int volume, double weight) {
+        super(reference, description, transportationType, customer, destination, itemStatus, depth, height, length, volume, weight);
     }
 
     @Override

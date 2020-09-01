@@ -1,6 +1,6 @@
 package exceptions;
 
-public abstract class BoxException extends RuntimeException {
+public class BoxException extends RuntimeException {
         public BoxException() {
         }
 

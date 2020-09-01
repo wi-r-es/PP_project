@@ -11,26 +11,21 @@ import java.util.List;
 
 public class Management implements IManagement {
 
-    /* Tens de pensar nesta classe management como que o banco de dados de toda a aplicaçao, logo precisas de guardas aqui todos os dados da mesma,
-    *
-    * Daí ter criado um array de items, veiculos, drivers e deliveries... nao sei se é tudo mas acho que sim*/
-    List<IItem> Items = new ArrayList<IItem>();
-    List<IVehicle> Vehicles = new ArrayList<IVehicle>();
-    List<IDriver> Drivers = new ArrayList<IDriver>();
-    List<IDelivery> Deliveries = new ArrayList<IDelivery>();
+
+    private List<IItem> Items = new ArrayList<IItem>();
+    private List<IVehicle> Vehicles = new ArrayList<IVehicle>();
+    private List<IDriver> Drivers = new ArrayList<IDriver>();
+    private List<IDelivery> Deliveries = new ArrayList<IDelivery>();
 
 
-    /* E também tens de pensar que nao pode haver um inventario infinito, logo cria-se variaveis que definem o numero maximo de cada coisa*/
-    /* Estes valores nao estao no enunciado, inventei valores, verifica melhor no enunciado mas acho que nao estabelecem lá*/
+
     private static int MAXITEMS = 50;
     private static int MAXVEHICLES = 20;
     private static int MAXDRIVERS = 20;
 
-    /* O caso das deliveries nao se aplica um valor maximo... */
-
+    // depois preciso que me ajudes a dar os throws as exceptions
     @Override
     public boolean addItem(IItem var1) throws ManagementException {
-        // com os valores maximos definidos e com o container de items o array (Items) consegues saber se é true ou false adicionar o item
 
         if (Items.size() >= MAXITEMS)
             return false;
@@ -49,7 +44,6 @@ public class Management implements IManagement {
     @Override
     public IItem[] getItems() {
 
-        /* Amanha lembra-me para te explicar isto */
         IItem[] ItemsArray = new IItem[ Items.size() ];
         Items.toArray( ItemsArray );
         /**/
@@ -59,23 +53,64 @@ public class Management implements IManagement {
     @Override
     public IItem[] getItems(ICustomer var1) {
 
-        /* Aqui tens de fazer como em cima mas tens que returnar só os items que tem o Customer igual ao var1 */
-        return new IItem[0];
+        List<IItem> Items_Customer = new ArrayList<IItem>();
+
+        for( IItem temp : Items){
+            if( (temp.getCustomer()).equals(var1) ){
+                Items_Customer.add(temp);
+            }
+        }
+        IItem[] ItemsList = new IItem[ Items_Customer.size() ];
+        Items_Customer.toArray( ItemsList);
+        return ItemsList;
     }
 
     @Override
     public IItem[] getItems(IDestination var1) {
-        return new IItem[0];
+
+        List<IItem> Items_Destination = new ArrayList<IItem>();
+
+        for( IItem temp : Items){
+            if( (temp.getDestination()).equals(var1) ){
+                Items_Destination.add(temp);
+            }
+        }
+        IItem[] ItemsList = new IItem[ Items_Destination.size() ];
+        Items_Destination.toArray( ItemsList);
+        return ItemsList;
+
     }
 
     @Override
     public IItem[] getItems(TransportationTypes var1) {
-        return new IItem[0];
+
+        List<IItem> Items_TransportationType = new ArrayList<IItem>();
+
+        for( IItem tempItem : Items){
+            for ( TransportationTypes tempTransportationType : tempItem.getTransportationTypes()) {
+                if( (tempTransportationType.equals(var1) )){
+                    Items_TransportationType.add(tempItem);
+                }
+            }
+
+    }   IItem[] ItemsList = new IItem[Items_TransportationType.size()];
+        Items_TransportationType.toArray( ItemsList);
+        return ItemsList;
     }
 
     @Override
     public IItem[] getItems(ItemStatus var1) {
-        return new IItem[0];
+
+        List<IItem> Items_Status = new ArrayList<IItem>();
+
+        for( IItem temp : Items){
+            if( (temp.getStatus()).equals(var1) ){
+                Items_Status.add(temp);
+            }
+        }
+        IItem[] ItemsList = new IItem[Items_Status.size()];
+        Items_Status.toArray( ItemsList);
+        return ItemsList;
     }
 
     @Override
@@ -93,7 +128,8 @@ public class Management implements IManagement {
     public boolean addDriver(IDriver var1) throws ManagementException {
 
         if (Drivers.size() >= MAXDRIVERS)
-            return false;
+            throw new ManagementException("Vehicle Container Full");
+
         else {
             Drivers.add(var1);
             return true;
@@ -102,13 +138,12 @@ public class Management implements IManagement {
 
     @Override
     public boolean removeDriver(IDriver var1) throws ManagementException {
-        /* Com o exemplo do removeItem consegues fazer os outros removes*/
-        return true;
+        return Drivers.remove(var1);
     }
 
     @Override
     public boolean removeVehicle(IVehicle var1) throws ManagementException {
-        return false;
+        return Vehicles.remove(var1);
     }
 
     @Override
@@ -121,46 +156,132 @@ public class Management implements IManagement {
 
     @Override
     public IVehicle[] getFleet(VehicleStatus var1) {
-        return new IVehicle[0];
+        List<IVehicle> Vehicle_Status = new ArrayList<IVehicle>();
+
+        for( IVehicle temp : Vehicles){
+            if( (temp.getStatus()).equals(var1) ){
+                Vehicle_Status.add(temp);
+            }
+        }
+        IVehicle[] VehiclesList = new IVehicle[ Vehicle_Status.size() ];
+        Vehicle_Status.toArray( VehiclesList);
+        return VehiclesList;
     }
 
     @Override
     public IVehicle[] getFleet(TransportationTypes var1) {
-        return new IVehicle[0];
+        List<IVehicle> Vehicle_Status = new ArrayList<IVehicle>();
+
+        for( IVehicle tempVehicle : Vehicles){
+            for( TransportationTypes tempTransportationType : tempVehicle.getTransportationTypes()){
+                if( (tempTransportationType.equals(var1)) ) {
+                    Vehicle_Status.add(tempVehicle);
+                }
+            }
+        }
+        IVehicle[] VehicleList = new IVehicle[Vehicle_Status.size()];
+            Vehicle_Status.toArray( VehicleList);
+            return VehicleList;
+
     }
+
 
     @Override
     public IVehicle[] getFleet(VehicleStatus var1, TransportationTypes var2) {
-        return new IVehicle[0];
+        List<IVehicle> Vehicle_ST = new ArrayList<IVehicle>();
+
+        for( IVehicle tempVehicleSTT : Vehicles){
+            if( (tempVehicleSTT.getStatus()).equals(var1) ){
+                for( TransportationTypes tempTransportationType : tempVehicleSTT.getTransportationTypes()){
+                    if( (tempTransportationType.equals(var1)) ) {
+                        Vehicle_ST.add(tempVehicleSTT);
+                    }
+
+                }
+            }
+        }
+        IVehicle[] VehicleList = new IVehicle[Vehicle_ST.size()];
+        Vehicle_ST.toArray( VehicleList);
+        return VehicleList;
     }
 
     @Override
     public boolean addDelivery(IDelivery var1) throws ManagementException {
-        return false;
+        Deliveries.add(var1);
+        return true;
+
     }
 
     @Override
-    public void deliveredItem(String var1, String var2) throws Exception {
+    public void deliveredItem(String var1, String var2) throws Exception { /* var1 ID Delivery var2 item reference */
+
+        try {
+            for (IDelivery DeliveryTemp : Deliveries) {
+                if (var1.equals(DeliveryTemp.getId())) {
+                    for (IItem ItemTemp : Items) {
+                        if (var2.equals(ItemTemp.getReference())) {
+                            ItemTemp.setStatus( ItemStatus.DELIVERED ); //estou a mudar o valor na lista ??
+                        }
+                    }
+
+                }
+            }
+        }
+        catch (Exception e){
+            System.out.println("Error trying to access Item/Delivery"); //nao percebi bem os throws desta funcao
+        }
 
     }
 
     @Override
     public void deliveredItem(String var1, IDestination var2) throws Exception {
 
+        try {
+            for (IDelivery DeliveryTemp : Deliveries) {
+                if (var1.equals(DeliveryTemp.getId())) {
+                    if(var2.equals(DeliveryTemp.getRemainingItems())){ //nao sei como aceder aos items dentro das deliveries
+
+                    }
+                }
+            }
+        }
+        catch (Exception e){
+            System.out.println("Error trying to access Item/Delivery"); //nao percebi bem os throws desta funcao
+        }
+
     }
 
     @Override
     public ItemStatus checkItemStatus(String var1) throws Exception {
+
+        try{
+            for( IItem temp : Items){
+                if( (temp.getReference()).equals(var1) ) return temp.getStatus();
+            }
+        }
+        catch(Exception e){
+            System.out.println("Item Couldn't be Found...");
+        }
         return null;
     }
 
     @Override
     public void startDelivery(String var1) throws DeliveryException {
-
+        List<IItem> Items_Delivery = new ArrayList<IItem>();
+        for( IDelivery tempD : Deliveries ){
+            if( var1.equals(tempD.getId())){
+                tempD.start();
+            }
+        }
     }
 
     @Override
     public void stopDelivery(String var1) throws DeliveryException {
-
+        List<IItem> Items_Delivery = new ArrayList<IItem>();
+        for( IDelivery tempD : Deliveries ){
+            if( var1.equals(tempD.getId())){
+                tempD.end();
+            }
+        }
     }
 }

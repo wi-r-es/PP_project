@@ -1,6 +1,6 @@
 package exceptions;
 
-public abstract class ManagementException extends Exception {
+public class ManagementException extends Exception {
     public ManagementException() {
     }
 

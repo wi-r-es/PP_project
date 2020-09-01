@@ -1,6 +1,6 @@
 package exceptions;
 
-public abstract class PositionException extends Exception {
+public class PositionException extends Exception {
     public PositionException() {
     }
 

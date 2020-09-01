@@ -1,6 +1,6 @@
 package exceptions;
 
-public abstract class TransportException extends Exception {
+public class TransportException extends Exception {
     public TransportException() {
     }
 

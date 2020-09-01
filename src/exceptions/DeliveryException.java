@@ -1,6 +1,6 @@
 package exceptions;
 
-public abstract class DeliveryException extends Exception {
+public class DeliveryException extends Exception {
     public DeliveryException() {
     }
 

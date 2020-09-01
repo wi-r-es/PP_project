@@ -5,25 +5,24 @@ import hr.IDestination;
 
 public class Item implements IItem {
 
-    private String Reference;
+    private final String Reference;
     private String Description;
-    private TransportationTypes[] TransportationTypes;
+    private TransportationTypes[] TransportationType;
     private ICustomer Customer;
     private IDestination Destination;
     private ItemStatus ItemStatus;
-    private int Depth;
-    private int Height;   /* nao deveria simplesmente dar extend a box e retirava todo o codigo que ja esta em BOX? os dados heigh length etc, e os respetivos set e get?? */
-                          /* nao prk uma coisa é o height / length da box que como já te expliquei é algo estatico, existem várias boxes tu escolhes uma tipo. Outra coisa é esses atributos de cada item dentro da box*/
-    private int Length;
-    private int Volume;
-    private double Weight;
+    private  int Depth;
+    private  int Height;
+    private final int Length;
+    private final int Volume;
+    private final double Weight;
 
     /* Constructor*/
 
     public Item(String reference, String description, transport.TransportationTypes[] transportationTypes, ICustomer customer, IDestination destination, transport.ItemStatus itemStatus, int depth, int height, int length, int volume, double weight) {
         Reference = reference;
         Description = description;
-        TransportationTypes = transportationTypes;
+        TransportationType = transportationTypes;
         Customer = customer;
         Destination = destination;
         ItemStatus = itemStatus;
@@ -48,7 +47,7 @@ public class Item implements IItem {
     @Override
     public TransportationTypes[] getTransportationTypes() {
 
-        return TransportationTypes;
+        return TransportationType;
     }
 
     @Override
@@ -102,6 +101,8 @@ public class Item implements IItem {
     public int getVolume() {
         return Volume;
     }
+
+
 
 
 }

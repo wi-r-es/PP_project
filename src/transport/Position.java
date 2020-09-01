@@ -4,6 +4,8 @@ import exceptions.PositionException;
 
 public class Position implements IPosition {
     private int X, Y, Z;
+    private PositionAvailability positionStatus;
+    /* Position type FREE OCCUPIED*/
 
     @Override
     public int getX() {
@@ -34,4 +36,10 @@ public class Position implements IPosition {
     public void setZ(int z) {
         Z = z;
     }
+    @Override
+    public PositionAvailability getPStatus(){return positionStatus;}
+    @Override
+    public void setPStatus(PositionAvailability var1) { positionStatus = var1;}
+
+
 }

@@ -1,6 +1,6 @@
 package exceptions;
 
-public abstract class HRException extends Exception {
+public class HRException extends Exception {
     public HRException() {
     }
 
