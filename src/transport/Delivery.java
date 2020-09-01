@@ -157,7 +157,7 @@ public class Delivery implements IDelivery {
             for (IItem itemTemp : ItemsPacked) {
                 if ((itemTemp.getDestination()).equals(var1)) {
                     ItemsPacked.remove(itemTemp);
-                    itemTemp.setStatus(var2); // once again isto esta a mudar o valor do item encontrado na lista mesmo ?
+                    itemTemp.setStatus(var2);
                     this.Position.setPStatus(PositionAvailability.FREE);
                     subWeight(itemTemp);
                     return true;
