@@ -73,14 +73,13 @@ public class Delivery implements IDelivery {
         this.zPosition = zPosition;
     }
 
-    public boolean isPositionFree(IPosition var1) { // se sobrar tempo, tentar fazer com os height, length e depth para ficar mais coreto
+    public boolean isPositionFree(IPosition var1) { // se sobrar tempo, tentar fazer com os height, length e depth para ficar mais correto
+                                                    // Exato, eu se fosse stor considerava bué se fizesses da forma correta, mas deixa para fim
         return (this.Position.getPStatus()).equals(PositionAvailability.FREE);
 
     }
 
-    public void addWeight(IItem var1) {
-        this.CurrentWeight += var1.getWeight();
-    }
+
     public void subWeight(IItem var1){
         this.CurrentWeight -= var1.getWeight();
     }
@@ -91,14 +90,14 @@ public class Delivery implements IDelivery {
             this.Position = var2;
             this.Position.setPStatus(PositionAvailability.OCCUPIED);
             this.ItemsPacked.add(var1);
-            addWeight(var1);
-            return true;
+            this.CurrentWeight += var1.getWeight();
 
             //inicio do arrumamento e ocupacao do espaco mais realista...
-            setxPosition(var1.getHeight()); //why da fuck 'e que isto da erro ?
+            setxPosition(var1.getHeight()); //why da fuck 'e que isto da erro ? Dava erro prk tu tinhas isto depois do return true, ou seja nunca na vida chegava a este codigo, logo o compilador avisa-te e dá erro
             setyPosition(var1.getLength());
             setzPosition(var1.getDepth());
 
+            return true;
 
         } else {
 
@@ -114,13 +113,13 @@ public class Delivery implements IDelivery {
                     this.Position = var2;
                     this.Position.setPStatus(PositionAvailability.OCCUPIED);
                     this.ItemsPacked.add(var1);
-                    addWeight(var1);
+                    this.CurrentWeight += var1.getWeight();
                     return true;
                 } else {
-                    throw new DeliveryException("Transportation Types don't match..."); return false;
+                    throw new DeliveryException("Transportation Types don't match...");
                 }
             } else{
-                throw new DeliveryException("Given Position Is Occupied..."); return false;
+                throw new DeliveryException("Given Position Is Occupied...");
             }
         }
     }
@@ -131,7 +130,6 @@ public class Delivery implements IDelivery {
     public boolean unload(IItem var1, ItemStatus var2) throws DeliveryException {
         if( isEmpty() ) {
             throw new DeliveryException("Emptyness found...");
-            return false;
 
         }else{
             for (IItem itemTemp : ItemsPacked) {
@@ -143,18 +141,17 @@ public class Delivery implements IDelivery {
                     return true;
                 } else {
                     throw new DeliveryException("Item doesn't exist in Delivery...");
-                    return false;
                 }
             }
         }
         return false; //sem esta linha aparece como erro for some reason...
+                        //Claro, imagina pode-se dar o caso de entrar no primeiro else mas nunca entrar no if, caso isso aconteça nao passa por nenhum return... por isso é que te dá erro
     }
 
     @Override
     public boolean unload(IDestination var1, ItemStatus var2) throws DeliveryException {
         if (isEmpty()) {
             throw new DeliveryException("Emptyness found...");
-            return false;
         } else{
 
             for (IItem itemTemp : ItemsPacked) {
@@ -166,10 +163,11 @@ public class Delivery implements IDelivery {
                     return true;
                 } else {
                     throw new DeliveryException("Items with giver destination don't exist in Delivery...");
-                    return false;
                 }
-            } // tal como podes ver aqui, se nao adicionar um return false aparece erro...
+            }
+
         }
+        return false;
     }
 
     @Override
@@ -181,6 +179,7 @@ public class Delivery implements IDelivery {
     public IItem[] getRemainingItems() {
         if (isEmpty()){
             System.err.println("There is no remaining items...");
+            return null;
         } else {
             List<IItem> RemainingItems = new ArrayList<IItem>();
             for(IItem itemTemp : ItemsPacked){
@@ -198,12 +197,13 @@ public class Delivery implements IDelivery {
             RemainingItems.toArray( RemaingList );
             return RemaingList;
         }
-    } //same here....
+    }
 
     @Override
     public IDestination[] getRemainingDestinations() {
         if (isEmpty()){
             System.err.println("There is no remaining items with given destination ...");
+            return null;
         } else {
             List<IDestination> RemainingDestinations = new ArrayList<IDestination>();
             for(IItem itemTemp : ItemsPacked){
@@ -225,14 +225,9 @@ public class Delivery implements IDelivery {
 
     @Override
     public void start() throws DeliveryException {
-        if( this.Vehicle.equals(null) ){
-             throw new DeliveryException("No Vehicle assigned...");
-        }
-        if( this.Driver.equals(null) ){
-            throw new DeliveryException("No Driver assigned...");
-        }
+
         if( !(this.Vehicle.getStatus().equals(VehicleStatus.IN_PREPARATION)) ){
-            throw new DeliveryException("Vehicle Status isn't IN_PREPERATION...");
+            throw new DeliveryException("Vehicle Status isn't IN_PREPARATION...");
         }
         if( this.isEmpty() ){
             throw new DeliveryException("Emptiness Found...");
