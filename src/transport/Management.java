@@ -35,9 +35,7 @@ public class Management implements IManagement {
     public boolean addItem(IItem var1) throws ManagementException {
 
         if( var1.getStatus().equals(ItemStatus.NON_DELIVERED)){
-             if ( var1.getTransportationTypes().equals(null) ){ // aqui tbm diz que da sempre false... nao sei como fazer isto....
-                 throw new ManagementException("Item haven't specified a Transportation Type...");
-             } else {
+
                  if(ItemsList[0] == null){
                      ItemsList[0] = var1;
                  } else {
@@ -56,9 +54,9 @@ public class Management implements IManagement {
                          return false;
                      }
                  }
-             }
+
         } else {
-            throw new ManagementException("Item Status isn't NON_DELIVERED");
+            throw new ManagementException("Item Status has been delivered already");
 
         }
         return false;
@@ -68,16 +66,14 @@ public class Management implements IManagement {
     @Override
     public boolean removeItem(IItem var1) throws ManagementException {
 
-        if(ItemsList[0] == null){
-            Arrays.sort(ItemsList);
-            if (ItemsList[0] == null){
-                System.out.println("No Item to be removed..."); //double-check if ItemsList is empty
+        if(ItemsList.length == 0){
+                System.out.println("No Item to be removed...");
                 return false;
             }
-        } else {
+         else {
             try {
-                for( int i =0; i < MAXITEMS ; i++){
 
+                for( int i =0; i< ItemsList.length ; i++){ // nao sei o que é que está a acontecer, prk raio é que isto diz que i < ItemsList.length dá sempre true mas no metodo de baixo funciona bem what
                     if(ItemsList[i].equals(var1)){
                         if( ItemsList[i].getReference().equals(var1.getReference()) && ItemsList[i].getCustomer().equals(var1.getCustomer()) ){ //deep check the condition validated before
                             ItemsList[i]=null;
@@ -86,36 +82,35 @@ public class Management implements IManagement {
                         } else return false;
                     } else return false;
                 }
-            } catch (IndexOutOfBoundsException){
+            } catch (IndexOutOfBoundsException e){
                 System.out.println("Index out of bounds...");
                 return false;
             }
-        } return false;
+        }
+        return false;
     }
 
 
     @Override
     public IItem[] getItems() {
 
-        if(ItemsList[0] == null){
-            Arrays.sort(ItemsList);
-            if (ItemsList[0] == null){
-                System.out.println("No Items to be found..."); //double-check if ItemsList is empty
-            }
+        if(ItemsList.length == 0){
+            System.out.println("No Items to be retrieved...");
+            return null;
         } else {
             try {
                 int counter= 0;
                 for( int i =0; i< ItemsList.length ; i++){
-                    if ( ItemsList[i] == null){ counter = i; }
+                    if
+                    ( ItemsList[i] == null){ counter = i; }
                     else if( i ==  MAXITEMS-1 ) { counter = i; }
                 }
-                IItem[] ItemsCopy = Arrays.copyOfRange(ItemsList, 0, counter);
-                return ItemsCopy;
+                return Arrays.copyOfRange(ItemsList, 0, counter);
             } catch (IndexOutOfBoundsException e){
                 System.out.println("Index out of bounds...");
             }
         }
-        //dou return de um array vazio ?
+        return null; //Dás return de null que é o que diz no javadocs
     }
 
     @Override
@@ -138,7 +133,7 @@ public class Management implements IManagement {
                     }
                 }
                 IItem[] ItemsCopy = new IItem[numOfItems];
-                for (int i =0; i<= numOfItems; i++) { //verificar se este for loop esta bem confecionado xD
+                for (int i =0; i<= numOfItems; i++) { //verificar se este for loop esta bem confecionado xD --- SEEMS GOOD
                     ItemsCopy[i] = ItemsList[ItemsIndexes[i]];
                 }
                 return ItemsCopy;
@@ -146,7 +141,7 @@ public class Management implements IManagement {
                 System.out.println("Index out of bounds...");
             }
         }
-        //dou return de um array vazio ?
+        return null;
     }
 
     @Override
