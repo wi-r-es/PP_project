@@ -19,13 +19,13 @@ public class Item implements IItem {
 
     /* Constructor*/
 
-    public Item(String reference, String description, transport.TransportationTypes[] transportationTypes, ICustomer customer, IDestination destination, transport.ItemStatus itemStatus, int depth, int height, int length, int volume, double weight) {
+    public Item(String reference, String description, transport.TransportationTypes[] transportationTypes, ICustomer customer, IDestination destination, int depth, int height, int length, int volume, double weight) {
         Reference = reference;
         Description = description;
         TransportationType = transportationTypes;
         Customer = customer;
         Destination = destination;
-        ItemStatus = itemStatus;
+        ItemStatus = transport.ItemStatus.NON_DELIVERED;
         Depth = depth;
         Height = height;
         Length = length;

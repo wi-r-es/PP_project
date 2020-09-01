@@ -5,8 +5,10 @@ import exceptions.ManagementException;
 import hr.ICustomer;
 import hr.IDestination;
 import hr.IDriver;
+import org.json.simple.ItemList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Management implements IManagement {
@@ -17,52 +19,134 @@ public class Management implements IManagement {
     private List<IDriver> Drivers = new ArrayList<IDriver>();
     private List<IDelivery> Deliveries = new ArrayList<IDelivery>();
 
+    private IItem[] ItemsList = new IItem[MAXITEMS];
+    private IVehicle[] VehiclesList = new IVehicle[MAXVEHICLES];
+    private IDriver[] DriversList = new IDriver[MAXDRIVERS];
+    private IDelivery[] DeliveriesList = new IDelivery[MAXDELIVERIES];
 
 
     private final static int MAXITEMS = 50;
     private final static int MAXVEHICLES = 20;
     private final static int MAXDRIVERS = 20;
+    private final static int MAXDELIVERIES = 100;
 
-    // depois preciso que me ajudes a dar os throws as exceptions
+    // Methods
     @Override
     public boolean addItem(IItem var1) throws ManagementException {
 
-        if (Items.size() >= MAXITEMS)
-            return false;
-        else {
-            Items.add(var1);
-            return true;
+        if( var1.getStatus().equals(ItemStatus.NON_DELIVERED)){
+             if ( var1.getTransportationTypes().equals(null) ){ // aqui tbm diz que da sempre false... nao sei como fazer isto....
+                 throw new ManagementException("Item haven't specified a Transportation Type...");
+             } else {
+                 if(ItemsList[0] == null){
+                     ItemsList[0] = var1;
+                 } else {
+                     try {
+                         for( int i =1; i< ItemsList.length ; i++){
+
+                             if(ItemsList[i] == null){
+                                 if( ItemsList[i-1] != null  && ItemsList[i+1] == null ){
+                                     ItemsList[i] = var1;
+                                     return true;
+                                 } else {Arrays.sort(ItemsList, i-1 , ItemsList.length); i--;}
+                             }
+                         }
+                     } catch (IndexOutOfBoundsException e){
+                         System.out.println("Index out of bounds...");
+                         return false;
+                     }
+                 }
+             }
+        } else {
+            throw new ManagementException("Item Status isn't NON_DELIVERED");
+
         }
+        return false;
     }
+
 
     @Override
     public boolean removeItem(IItem var1) throws ManagementException {
 
-        return Items.remove(var1);
+        if(ItemsList[0] == null){
+            Arrays.sort(ItemsList);
+            if (ItemsList[0] == null){
+                System.out.println("No Item to be removed..."); //double-check if ItemsList is empty
+                return false;
+            }
+        } else {
+            try {
+                for( int i =0; i < MAXITEMS ; i++){
+
+                    if(ItemsList[i].equals(var1)){
+                        if( ItemsList[i].getReference().equals(var1.getReference()) && ItemsList[i].getCustomer().equals(var1.getCustomer()) ){ //deep check the condition validated before
+                            ItemsList[i]=null;
+                            Arrays.sort(ItemsList, i, ItemsList.length);
+                            return true;
+                        } else return false;
+                    } else return false;
+                }
+            } catch (IndexOutOfBoundsException){
+                System.out.println("Index out of bounds...");
+                return false;
+            }
+        } return false;
     }
+
 
     @Override
     public IItem[] getItems() {
 
-        IItem[] ItemsArray = new IItem[ Items.size() ];
-        Items.toArray( ItemsArray );
-        /**/
-        return ItemsArray;
+        if(ItemsList[0] == null){
+            Arrays.sort(ItemsList);
+            if (ItemsList[0] == null){
+                System.out.println("No Items to be found..."); //double-check if ItemsList is empty
+            }
+        } else {
+            try {
+                int counter= 0;
+                for( int i =0; i< ItemsList.length ; i++){
+                    if ( ItemsList[i] == null){ counter = i; }
+                    else if( i ==  MAXITEMS-1 ) { counter = i; }
+                }
+                IItem[] ItemsCopy = Arrays.copyOfRange(ItemsList, 0, counter);
+                return ItemsCopy;
+            } catch (IndexOutOfBoundsException e){
+                System.out.println("Index out of bounds...");
+            }
+        }
+        //dou return de um array vazio ?
     }
 
     @Override
     public IItem[] getItems(ICustomer var1) {
 
-        List<IItem> Items_Customer = new ArrayList<IItem>();
-
-        for( IItem temp : Items){
-            if( (temp.getCustomer()).equals(var1) ){
-                Items_Customer.add(temp);
+        if(ItemsList[0] == null){
+            Arrays.sort(ItemsList);
+            if (ItemsList[0] == null){
+                System.out.println("No Items to be found..."); //double-check if ItemsList is empty
+            }
+        } else {
+            try {
+                int numOfItems = 0;
+                int[] ItemsIndexes = new int[25];
+                int counter= 0;
+                for( int i =0; i< ItemsList.length ; i++){
+                    if ( ItemsList[i].getCustomer().equals(var1) ){
+                        ItemsIndexes[numOfItems]=i;
+                        numOfItems++;
+                    }
+                }
+                IItem[] ItemsCopy = new IItem[numOfItems];
+                for (int i =0; i<= numOfItems; i++) { //verificar se este for loop esta bem confecionado xD
+                    ItemsCopy[i] = ItemsList[ItemsIndexes[i]];
+                }
+                return ItemsCopy;
+            } catch (IndexOutOfBoundsException e){
+                System.out.println("Index out of bounds...");
             }
         }
-        IItem[] ItemsList = new IItem[ Items_Customer.size() ];
-        Items_Customer.toArray( ItemsList);
-        return ItemsList;
+        //dou return de um array vazio ?
     }
 
     @Override
