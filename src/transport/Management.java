@@ -19,9 +19,9 @@ public class Management implements IManagement {
 
 
 
-    private static int MAXITEMS = 50;
-    private static int MAXVEHICLES = 20;
-    private static int MAXDRIVERS = 20;
+    private final static int MAXITEMS = 50;
+    private final static int MAXVEHICLES = 20;
+    private final static int MAXDRIVERS = 20;
 
     // depois preciso que me ajudes a dar os throws as exceptions
     @Override
