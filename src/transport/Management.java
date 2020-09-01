@@ -220,7 +220,7 @@ public class Management implements IManagement {
                 if (var1.equals(DeliveryTemp.getId())) {
                     for (IItem ItemTemp : Items) {
                         if (var2.equals(ItemTemp.getReference())) {
-                            ItemTemp.setStatus( ItemStatus.DELIVERED ); //estou a mudar o valor na lista ??
+                            ItemTemp.setStatus( ItemStatus.DELIVERED ); //estou a mudar o valor na lista ?? Sim, estás, está bem feito!
                         }
                     }
 
@@ -229,6 +229,7 @@ public class Management implements IManagement {
         }
         catch (Exception e){
             System.out.println("Error trying to access Item/Delivery"); //nao percebi bem os throws desta funcao
+                                                                        //Eles pedem Exception aqui? se pedem é isto que tens diria eu
         }
 
     }
@@ -239,8 +240,10 @@ public class Management implements IManagement {
         try {
             for (IDelivery DeliveryTemp : Deliveries) {
                 if (var1.equals(DeliveryTemp.getId())) {
-                    if(var2.equals(DeliveryTemp.getRemainingItems())){ //nao sei como aceder aos items dentro das deliveries
-
+                    for (IItem ItemTemp : DeliveryTemp.getRemainingItems()) {
+                        if (var2.equals(ItemTemp.getDestination())) { //nao sei como aceder aos items dentro das deliveries, DONE! alguma duvida diz
+                            ItemTemp.setStatus(ItemStatus.DELIVERED);
+                        }
                     }
                 }
             }
