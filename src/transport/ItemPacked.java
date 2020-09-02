@@ -1,16 +1,14 @@
 package transport;
 
-import hr.ICustomer;
-import hr.IDestination;
 
 public class ItemPacked extends Item implements IItemPacked{
 //class for when item is set for delivery
     private IItem Item;
     private IPosition Position;
 
-    public ItemPacked(String reference, String description, TransportationTypes[] transportationTypes, ICustomer customer, IDestination destination, int depth, int height, int length, int volume, double weight, IItem item, IPosition position) {
-        super(reference, description, transportationTypes, customer, destination, depth, height, length, volume, weight);
-        Item = item;
+
+    public ItemPacked(IItem item, IPosition position) { //esta bem feito ?
+        super(item);
         Position = position;
     }
 

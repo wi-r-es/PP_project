@@ -18,18 +18,11 @@ public class Delivery implements IDelivery {
     private IDriver Driver;
     private IPosition Position;
     private IItem[] ItemsPacked;
-    private int zPosition;
-    private int yPosition;
-    private int xPosition;
     private int insidePosition = 0;
 
-    // private static int MAX_ITEMS_PER_CARGO = 10;
     private static Integer IDCOUNT=0;
-    private static double MAX_VOLUME_PER_BOX=1000; //cm3
-    private static int MAXITEMSDELIVERY = 50;
+    private final static int MAXITEMSDELIVERY = 50;
 
-    /* private static int XMAX= 260; //cm
-    private static int YMAX= */
 
 
     public Delivery() {
@@ -38,7 +31,7 @@ public class Delivery implements IDelivery {
         CurrentWeight = 0;
         Driver = null;
         Position = null;
-        ItemsPacked = new IItem[MAXITEMSDELIVERY];
+        ItemsPacked = new ItemPacked[MAXITEMSDELIVERY];
 
     }
 
@@ -66,7 +59,7 @@ public class Delivery implements IDelivery {
                     try{
                         for (int i=0; i< tempV.length ; i++){
                             if ( var2.haveLicense(tempV[i]) ){
-                                allLicensesCheck = true;
+                                allLicensesCheck = true;  //esta bem pensado ?
                             }else allLicensesCheck = false;
                         }
                     } catch (ArrayIndexOutOfBoundsException e){
@@ -98,9 +91,34 @@ public class Delivery implements IDelivery {
                 if( getCurrentWeight() >= getVehicle().getMaxWeight() ){
                     throw new DeliveryException("Weight exceeds Limits...");
                 } else if( Arrays.deepEquals(this.getVehicle().getTransportationTypes(), var1.getTransportationTypes())){ //does this work like i think it does??
-                    if( ){
+                    if( !isEmpty() ){
+                        for(IItem tempItem : ItemsPacked ){
+                            if( var1.getReference().equals(tempItem.getReference())){
+                                return false;
+                            }
+                        }
+                        for (int i = 0; i < insidePosition ; i++) {   //canto superior
+                            if( ( ((ItemPacked)ItemsPacked[i] ).getPosition().getX()  < var2.getX() ) &&
+                                    (  (((ItemPacked)ItemsPacked[i] ).getPosition().getX()) + ItemsPacked[i].getLength()  > var2.getX()  ) &&
+                                    (  ((ItemPacked)ItemsPacked[i] ).getPosition().getY()  < var2.getY()  ) &&
+                                    (   (((ItemPacked)ItemsPacked[i] ).getPosition().getY()) + ItemsPacked[i].getHeight()  > var2.getY()  ) &&
+                                    (   ((ItemPacked)ItemsPacked[i] ).getPosition().getZ()  < var2.getZ()    )  &&
+                                    (   (((ItemPacked)ItemsPacked[i] ).getPosition().getZ()) + ItemsPacked[i].getDepth()  > var2.getZ()  )&&
+                                    //canto inferior
+                            ( ((ItemPacked)ItemsPacked[i] ).getPosition().getX()  < var2.getX()+var1.getLength() ) &&
+                                    (  (((ItemPacked)ItemsPacked[i] ).getPosition().getX()) + ItemsPacked[i].getLength()  > var2.getX()+var1.getLength()  ) &&
+                                    (  ((ItemPacked)ItemsPacked[i] ).getPosition().getY()  < var2.getY()+var1.getHeight()  ) &&
+                                    (   (((ItemPacked)ItemsPacked[i] ).getPosition().getY()) + ItemsPacked[i].getHeight()  > var2.getY()+ var1.getHeight()  ) &&
+                                    (   ((ItemPacked)ItemsPacked[i] ).getPosition().getZ()  < var2.getZ()+var1.getDepth()    )  &&
+                                    (   (((ItemPacked)ItemsPacked[i] ).getPosition().getZ()) + ItemsPacked[i].getDepth()  > var2.getZ()+ var1.getDepth()  )
+                            ){
+                                 throw new DeliveryException("Object Collision...");
+                            }
+                        }
+                    } // Delivery is Empty || Objects don't Collide
+                    ItemsPacked[insidePosition++]= new ItemPacked(var1,var2);
+                    return true;
 
-                    }else throw new DeliveryException("Items Overflowing...");
                 } else throw new DeliveryException("Transportation Restrictions don't match...");
             } else throw new DeliveryException("Vehicle given isn't IN_PREPARATION...");
         } else throw new DeliveryException("Item status isn't NON_DELIVERED...");

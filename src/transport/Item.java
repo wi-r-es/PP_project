@@ -17,7 +17,22 @@ public class Item implements IItem {
     private final int Volume;
     private final double Weight;
 
+
     /* Constructor*/
+    //construtor copia
+    public Item (IItem item ){
+        Reference = item.getReference();
+        Description = item.getDescription();
+        TransportationType = item.getTransportationTypes();
+        Customer = item.getCustomer();
+        Destination = item.getDestination();
+        ItemStatus = item.getStatus();
+        Depth = item.getDepth();
+        Height = item.getHeight();
+        Length = item.getLength();
+        Volume = item.getVolume();
+        Weight = item.getWeight();
+    }
 
     public Item(String reference, String description, transport.TransportationTypes[] transportationTypes, ICustomer customer, IDestination destination, int depth, int height, int length, int volume, double weight) {
         Reference = reference;
