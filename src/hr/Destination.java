@@ -26,4 +26,14 @@ public class Destination implements IDestination {
     public IGeoCoordinates getGeoCoordinates() {
         return GeoCoordinates;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj) return true; // its himself
+        if( (obj == null) || (this.getClass() != obj.getClass()) ){
+            return false;
+        }//confirmar se parametro e da mesma classe do recetor
+        Destination d = (Destination) obj;
+        return ( Name.equals(d.getName()) && Address.equals(d.getAddress()) && GeoCoordinates.equals(d.getGeoCoordinates()) );
+    }
 }

@@ -6,9 +6,7 @@ import hr.IDriver;
 import hr.LicenseType;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class Delivery implements IDelivery {
 
@@ -55,6 +53,7 @@ public class Delivery implements IDelivery {
             if( var1.getStatus().equals(VehicleStatus.FREE) ){
                 if( var2.getStatus().equals(DriverStatus.FREE) ){
                     LicenseType[] tempV = new LicenseType[var1.getAllowedLicenses().length];
+                    tempV = Arrays.copyOf(var1.getAllowedLicenses(), var1.getAllowedLicenses().length);
                     boolean allLicensesCheck = false;
                     try{
                         for (int i=0; i< tempV.length ; i++){
@@ -84,89 +83,123 @@ public class Delivery implements IDelivery {
 
     @Override
     public boolean load(IItem var1, IPosition var2) throws DeliveryException {
-        if ( var1.getStatus().equals(ItemStatus.NON_DELIVERED ) ){
-            if ( getVehicle().equals(null) || getDriver().equals(null) ){ // aparece me que da sempre false qd tenho um construtor que incializa tudo a null menos o ID como corrijo
+        try{
+            if (var1.getStatus().equals(ItemStatus.NON_DELIVERED)) {
+            if (getVehicle()==null || getDriver()==null) {
                 throw new DeliveryException("Vehicle/Driver not assigned...");
-            } else if (getVehicle().getStatus().equals(VehicleStatus.IN_PREPARATION)){
-                if( getCurrentWeight() >= getVehicle().getMaxWeight() ){
+            } else if (getVehicle().getStatus().equals(VehicleStatus.IN_PREPARATION)) {
+                updateCurrentWeight();
+                if (getCurrentWeight() >= getVehicle().getMaxWeight()) {
                     throw new DeliveryException("Weight exceeds Limits...");
-                } else if( Arrays.deepEquals(this.getVehicle().getTransportationTypes(), var1.getTransportationTypes())){ //does this work like i think it does??
-                    if( !isEmpty() ){
-                        for(IItem tempItem : ItemsPacked ){
-                            if( var1.getReference().equals(tempItem.getReference())){
+                } else if (Arrays.deepEquals(this.getVehicle().getTransportationTypes(), var1.getTransportationTypes())) { //does this work like i think it does??
+                    if (!isEmpty()) {
+                        try{
+                        for (IItem tempItem : ItemsPacked) {
+                            if (var1.getReference().equals(tempItem.getReference())) {
                                 return false;
                             }
                         }
-                        for (int i = 0; i < insidePosition ; i++) {   //canto superior
-                            if( ( ((ItemPacked)ItemsPacked[i] ).getPosition().getX()  < var2.getX() ) &&
-                                    (  (((ItemPacked)ItemsPacked[i] ).getPosition().getX()) + ItemsPacked[i].getLength()  > var2.getX()  ) &&
-                                    (  ((ItemPacked)ItemsPacked[i] ).getPosition().getY()  < var2.getY()  ) &&
-                                    (   (((ItemPacked)ItemsPacked[i] ).getPosition().getY()) + ItemsPacked[i].getHeight()  > var2.getY()  ) &&
-                                    (   ((ItemPacked)ItemsPacked[i] ).getPosition().getZ()  < var2.getZ()    )  &&
-                                    (   (((ItemPacked)ItemsPacked[i] ).getPosition().getZ()) + ItemsPacked[i].getDepth()  > var2.getZ()  )&&
+                        for (int i = 0; i < insidePosition; i++) {   //canto superior
+                            if ((((ItemPacked) ItemsPacked[i]).getPosition().getX() < var2.getX()) &&
+                                    ((((ItemPacked) ItemsPacked[i]).getPosition().getX()) + ItemsPacked[i].getLength() > var2.getX()) &&
+                                    (((ItemPacked) ItemsPacked[i]).getPosition().getY() < var2.getY()) &&
+                                    ((((ItemPacked) ItemsPacked[i]).getPosition().getY()) + ItemsPacked[i].getHeight() > var2.getY()) &&
+                                    (((ItemPacked) ItemsPacked[i]).getPosition().getZ() < var2.getZ()) &&
+                                    ((((ItemPacked) ItemsPacked[i]).getPosition().getZ()) + ItemsPacked[i].getDepth() > var2.getZ()) &&
                                     //canto inferior
-                            ( ((ItemPacked)ItemsPacked[i] ).getPosition().getX()  < var2.getX()+var1.getLength() ) &&
-                                    (  (((ItemPacked)ItemsPacked[i] ).getPosition().getX()) + ItemsPacked[i].getLength()  > var2.getX()+var1.getLength()  ) &&
-                                    (  ((ItemPacked)ItemsPacked[i] ).getPosition().getY()  < var2.getY()+var1.getHeight()  ) &&
-                                    (   (((ItemPacked)ItemsPacked[i] ).getPosition().getY()) + ItemsPacked[i].getHeight()  > var2.getY()+ var1.getHeight()  ) &&
-                                    (   ((ItemPacked)ItemsPacked[i] ).getPosition().getZ()  < var2.getZ()+var1.getDepth()    )  &&
-                                    (   (((ItemPacked)ItemsPacked[i] ).getPosition().getZ()) + ItemsPacked[i].getDepth()  > var2.getZ()+ var1.getDepth()  )
-                            ){
-                                 throw new DeliveryException("Object Collision...");
+                                    (((ItemPacked) ItemsPacked[i]).getPosition().getX() < var2.getX() + var1.getLength()) &&
+                                    ((((ItemPacked) ItemsPacked[i]).getPosition().getX()) + ItemsPacked[i].getLength() > var2.getX() + var1.getLength()) &&
+                                    (((ItemPacked) ItemsPacked[i]).getPosition().getY() < var2.getY() + var1.getHeight()) &&
+                                    ((((ItemPacked) ItemsPacked[i]).getPosition().getY()) + ItemsPacked[i].getHeight() > var2.getY() + var1.getHeight()) &&
+                                    (((ItemPacked) ItemsPacked[i]).getPosition().getZ() < var2.getZ() + var1.getDepth()) &&
+                                    ((((ItemPacked) ItemsPacked[i]).getPosition().getZ()) + ItemsPacked[i].getDepth() > var2.getZ() + var1.getDepth())
+                            ) {
+                                throw new DeliveryException("Object Collision...");
                             }
-                        }
+                        } } catch(ArrayIndexOutOfBoundsException e){
+                                System.err.println("Index out of Bounds");
+                            }
                     } // Delivery is Empty || Objects don't Collide
-                    ItemsPacked[insidePosition++]= new ItemPacked(var1,var2);
+                    ItemsPacked[insidePosition] = new ItemPacked(var1, var2);
+                    ItemsPacked[insidePosition++].setStatus(ItemStatus.ASSIGNED);
                     return true;
 
                 } else throw new DeliveryException("Transportation Restrictions don't match...");
             } else throw new DeliveryException("Vehicle given isn't IN_PREPARATION...");
         } else throw new DeliveryException("Item status isn't NON_DELIVERED...");
+        }
+        catch(NullPointerException e){
+            throw new DeliveryException(e.getMessage());
+        }
     }
 
 
 
     @Override
     public boolean unload(IItem var1, ItemStatus var2) throws DeliveryException {
-        if( isEmpty() ) {
-            throw new DeliveryException("Emptyness found...");
-
-        }else{
-            for (IItem itemTemp : ItemsPacked) {
-                if ((itemTemp.getReference()).equals(var1.getReference())) {
-                    ItemsPacked.remove(itemTemp);
-                    var1.setStatus(var2);
-                    this.Position.setPStatus(PositionAvailability.FREE);
-                    subWeight(itemTemp);
-                    return true;
-                } else {
-                    throw new DeliveryException("Item doesn't exist in Delivery...");
+        if( getDriver()==null || getVehicle()==null ) {
+            throw new DeliveryException("No Vehicle/Driver Assigned...");
+        }
+        if ( !( var1.getStatus().equals(ItemStatus.DELIVERED) || var1.getStatus().equals(ItemStatus.NON_DELIVERED) ) ){
+            throw new DeliveryException("parameter itemStatus is not ItemStatus.DELIVERED or ItemStatus.NON_DELIVERED");
+        }
+        if( !( getVehicle().getStatus().equals(VehicleStatus.IN_PREPARATION) && getVehicle().getStatus().equals(VehicleStatus.IN_TRANSIT) )){
+            throw new DeliveryException("The vehicle status is different from in preparation or in transit");
+        }
+        try{
+            for (int i = 0; i < ItemsPacked.length ; i++) {
+                if(ItemsPacked[i].equals(var1)){
+                    if( ItemsPacked[i].getReference().equals(var1.getReference()) && ItemsPacked[i].getCustomer().equals(var1.getCustomer()) ){ //deep check the condition validated before
+                        ItemsPacked[i].setStatus(var2);
+                        ItemsPacked[i]=null;
+                        Arrays.sort(ItemsPacked, i, ItemsPacked.length);
+                        insidePosition--;
+                        updateCurrentWeight();
+                        return true;
+                    } else return false;
                 }
             }
-        }
-        return false;
+        } catch (ArrayIndexOutOfBoundsException e){
+            System.err.println("Index out of bounds...");
+            return false;
+        } return false;
     }
 
     @Override
     public boolean unload(IDestination var1, ItemStatus var2) throws DeliveryException {
-        if (isEmpty()) {
-            throw new DeliveryException("Emptyness found...");
-        } else{
-
-            for (IItem itemTemp : ItemsPacked) {
-                if ((itemTemp.getDestination()).equals(var1)) {
-                    ItemsPacked.remove(itemTemp);
-                    itemTemp.setStatus(var2);
-                    this.Position.setPStatus(PositionAvailability.FREE);
-                    subWeight(itemTemp);
-                    return true;
-                } else {
-                    throw new DeliveryException("Items with giver destination don't exist in Delivery...");
+        if( getDriver()==null || getVehicle()==null){
+            throw new DeliveryException("No Vehicle/Driver Assigned...");
+        }
+        if ( !( var2.equals(ItemStatus.DELIVERED) || var2.equals(ItemStatus.NON_DELIVERED)) ){
+            throw new DeliveryException("parameter itemStatus is not ItemStatus.DELIVERED or ItemStatus.NON_DELIVERED");
+        }
+        if( !( getVehicle().getStatus().equals(VehicleStatus.IN_PREPARATION) && getVehicle().getStatus().equals(VehicleStatus.IN_TRANSIT) )){
+            throw new DeliveryException("The vehicle status is different from in preparation or in transit");
+        }
+        try{
+            int confirmDelete = ItemsPacked.length;
+            int numOfItems = 0;
+            int[] ItemsIndexes = new int[25];
+            int counter= 0;
+            for (int i = 0; i < ItemsPacked.length ; i++) {
+                if(ItemsPacked[i].getDestination().equals(var1)){
+                    ItemsIndexes[numOfItems]=i;
+                    numOfItems++;
                 }
             }
-
+            for (int i = 0; i < numOfItems ; i++) {
+                ItemsPacked[ItemsIndexes[i]] = null;
+                insidePosition--;
+            }
+            Arrays.sort(ItemsPacked);
+            updateCurrentWeight();
+            if (confirmDelete > ItemsPacked.length){
+                return true;
+            } else return false;
+        } catch (ArrayIndexOutOfBoundsException e){
+            System.err.println("Index out of bounds...");
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -178,129 +211,105 @@ public class Delivery implements IDelivery {
 
     @Override
     public IItem[] getRemainingItems() {
-        if (isEmpty()){
-            System.err.println("There is no remaining items...");
+        if (isEmpty()) {
             return null;
-        } else {
-            List<IItem> RemainingItems = new ArrayList<IItem>();
-            for(IItem itemTemp : ItemsPacked){
-                if( (itemTemp.getStatus()).equals(ItemStatus.NON_DELIVERED)){
-                    RemainingItems.add(itemTemp);
-                    /* like se cada package tiver 50x50x50
-                    agora seria algo do tipo
-                    xPosition -= itemTemp.getX
-                    yPosition -= itemTemp.getY
-                    zPosition -= itemTemp.getZ
-                     */
+        }else {
+            try {
+            IItem[] tempItem = new IItem[MAXITEMSDELIVERY];
+            for (int i = 0; i < ItemsPacked.length; i++) {
+                int j = 0;
+                if (!(ItemsPacked[i].getStatus().equals(ItemStatus.DELIVERED))) {
+                    tempItem[j++] = ItemsPacked[i];
                 }
             }
-            IItem[] RemaingList = new IItem[RemainingItems.size()];
-            RemainingItems.toArray( RemaingList );
-            return RemaingList;
-        }
+            return tempItem; }
+            catch (ArrayIndexOutOfBoundsException e) {
+                System.err.println("Index out of bounds...");
+            }
+        } return null;
     }
 
     @Override
     public IDestination[] getRemainingDestinations() {
-        if (isEmpty()){
-            System.err.println("There is no remaining items with given destination ...");
-            return null;
-        } else {
-            List<IDestination> RemainingDestinations = new ArrayList<IDestination>();
-            for(IItem itemTemp : ItemsPacked){
-                {
-                    RemainingDestinations.add(itemTemp.getDestination());
-                    /* like se cada package tiver 50x50x50
-                    agora seria algo do tipo
-                    xPosition -= itemTemp.getX
-                    yPosition -= itemTemp.getY
-                    zPosition -= itemTemp.getZ
-                     */
+        try{
+            IDestination[] DestinationTemp = new IDestination[ItemsPacked.length];
+            for( int i =0; i< ItemsPacked.length ; i++){
+                DestinationTemp[i] = ItemsPacked[i].getDestination();
+            }
+            Arrays.sort(DestinationTemp);
+            IDestination current = DestinationTemp[0];
+            boolean found = false;
+            for (int i = 1; i < DestinationTemp.length; i++) {    // tou a fazer este loop para apagar os elementos repetidos bem ?
+                if (current.equals(DestinationTemp[i]) && !found) { //este equals chega?
+                    DestinationTemp[i]= null;
+                    found = true;
+                } else if (current != DestinationTemp[i]) {
+                    current = DestinationTemp[i];
+                    found = false;
                 }
             }
-            IDestination[] RemaingList = new IDestination[RemainingDestinations.size()];
-            RemainingDestinations.toArray( RemaingList );
-            return RemaingList;
+            Arrays.sort(DestinationTemp);
+            return DestinationTemp;
+        }catch(ArrayIndexOutOfBoundsException e){
+            System.err.println("Index out of bounds...");
         }
-    } // same here
+        return null;
+    }
 
     @Override
     public void start() throws DeliveryException {
 
-        if( !(this.Vehicle.getStatus().equals(VehicleStatus.IN_PREPARATION)) ){
-            throw new DeliveryException("Vehicle Status isn't IN_PREPARATION...");
+        if (isEmpty()){
+            throw new DeliveryException("Delivery is empty...");
         }
-        if( this.isEmpty() ){
-            throw new DeliveryException("Emptiness Found...");
+        if (this.getVehicle()==null || this.getDriver()==null ){
+            throw new DeliveryException("No Vehicle/Driver assigned...");
+        }
+        if (this.getVehicle().getStatus().equals(VehicleStatus.IN_PREPARATION)){
+            throw new DeliveryException("Vehicle Status not in preparation...");
         }
         this.Vehicle.setStatus(VehicleStatus.IN_TRANSIT);
     }
 
     @Override
     public void end() throws DeliveryException {
-        if( (this.Vehicle.getStatus().equals(VehicleStatus.IN_TRANSIT))) {
+        if (this.getVehicle().getStatus().equals(VehicleStatus.IN_TRANSIT)){
             this.Vehicle.setStatus(VehicleStatus.FREE);
             this.Driver.setStatus(DriverStatus.FREE);
-            for( IItem itemsTemp : ItemsPacked ){
-                if( itemsTemp.getStatus().equals(ItemStatus.NON_DELIVERED) ){
-                    unload(itemsTemp, ItemStatus.ASSIGNED);
+            try {
+                for( IItem itemsTemp : ItemsPacked ){
+                    if( itemsTemp.getStatus().equals(ItemStatus.NON_DELIVERED) ){
+                        unload(itemsTemp, ItemStatus.ASSIGNED);
+                    }
                 }
+            } catch (ArrayIndexOutOfBoundsException e){
+                System.err.println("Index out of bounds...");
             }
-        }
+        } else throw new DeliveryException("Vehicle is not in transit...");
     }
 
     @Override
     public double getCurrentWeight() {
-        double total =0;
+        return CurrentWeight;
+    }
+    public void updateCurrentWeight(){
+        CurrentWeight=0;
         for(IItem itemTemp : ItemsPacked ){
-            total += itemTemp.getWeight();
+            CurrentWeight += itemTemp.getWeight();
         }
-        return total;
     }
-
-    @Override
-    public void export(String var1) throws IOException {
-        //Serialize an object to a specific format that can be stored.
-    }
-
 
     public IDriver getDriver() {
         return Driver;
     }
 
-    public int getxPosition() {
-        return xPosition;
-    }
-
-    public void setxPosition(int xPosition) {
-        this.xPosition = xPosition;
-    }
-
-    public int getyPosition() {
-        return yPosition;
-    }
-
-    public void setyPosition(int yPosition) {
-        this.yPosition = yPosition;
-    }
-
-    public int getzPosition() {
-        return zPosition;
-    }
-
-    public void setzPosition(int zPosition) {
-        this.zPosition = zPosition;
-    }
-
-    public boolean isPositionFree(IPosition var1) { // se sobrar tempo, tentar fazer com os height, length e depth para ficar mais correto
-        // Exato, eu se fosse stor considerava bué se fizesses da forma correta, mas deixa para fim
-        return (this.Position.getPStatus()).equals(PositionAvailability.FREE);
-
+    @Override //falta este
+    public void export(String var1) throws IOException {
+        //Serialize an object to a specific format that can be stored.
     }
 
 
-    public void subWeight(IItem var1){
-        this.CurrentWeight -= var1.getWeight();
-    }
+
+
 
 }

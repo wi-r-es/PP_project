@@ -26,10 +26,9 @@ public class Management implements IManagement {
     // Methods
     @Override
     public boolean addItem(IItem var1) throws ManagementException {
-
         if( var1.getStatus().equals(ItemStatus.NON_DELIVERED)){
-            if( var1.getTransportationTypes().equals(null)) { //tal situacao do transportation types..
-                 throw new ManagementException("Item have no transportation type defined...");
+            if( var1.getTransportationTypes()==null) {
+                throw new ManagementException("Item have no transportation type defined...");
             } else {
                 if(ItemsList[0] == null){
                     try{
@@ -202,7 +201,7 @@ public class Management implements IManagement {
                 int[] ItemsIndexes = new int[25];
                 int counter= 0;
                 for( int i =0; i< ItemsList.length ; i++){
-                    if ( ItemsList[i].getTransportationTypes().equals(var1) ){ //a tal cena do transportation types, depois preciso que vejas este problemazinho cmg
+                    if ( Arrays.deepEquals(ItemsList[i].getTransportationTypes(), var1) ){ //a tal cena do transportation types
                         ItemsIndexes[numOfItems]=i;
                         numOfItems++;
                     }

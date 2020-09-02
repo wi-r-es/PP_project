@@ -65,4 +65,14 @@ public class Address implements IAddress{
     public void setStreet(String street) {
         Street = street;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if ( this == obj) return true; // its himself
+        if( (obj == null) || (this.getClass() != obj.getClass()) ){
+            return false;
+        }//confirmar se parametro e da mesma classe do recetor
+        Address a = (Address) obj;
+        return ( City.equals(a.getCity()) && Country.equals(a.getCountry()) && Number==a.getNumber() && State.equals(a.getState()) && Street.equals(a.getStreet()) );
+    }
 }
