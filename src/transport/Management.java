@@ -18,9 +18,9 @@ public class Management implements IManagement {
     private IDriver[] DriversList = new IDriver[MAXDRIVERS];
     private IDelivery[] DeliveriesList = new IDelivery[MAXDELIVERIES];
 
-    private final static int MAXITEMS = 50;
-    private final static int MAXVEHICLES = 20;
-    private final static int MAXDRIVERS = 20;
+    private final static int MAXITEMS = 100;
+    private final static int MAXVEHICLES = 30;
+    private final static int MAXDRIVERS = 30;
     private final static int MAXDELIVERIES = 100;
 
     // Methods

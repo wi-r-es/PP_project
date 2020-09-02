@@ -18,33 +18,35 @@ public class Delivery implements IDelivery {
     private IDriver Driver;
     private IPosition Position;
     private IItem[] ItemsPacked;
-    private int xPosition;
-    private int yPosition;
     private int zPosition;
+    private int yPosition;
+    private int xPosition;
 
     // private static int MAX_ITEMS_PER_CARGO = 10;
     private static Integer IDCOUNT=0;
+    private static double MAX_VOLUME_PER_BOX=1000; //cm3
+    private static int MAXITEMSDELIVERY = 50;
+    /* private static int XMAX= 260; //cm
+    private static int YMAX= */
+
 
     public Delivery(Integer id) {
-        Id = id;
+        Id = ++IDCOUNT;
         Vehicle = null;
         CurrentWeight = 0;
         Driver = null;
         Position = null;
-        ItemsPacked = null;
+        ItemsPacked = new IItem[MAXITEMSDELIVERY];
 
     }
 
-    public Delivery(Integer id, IVehicle vehicle, double currentWeight, IDriver driver, IPosition position, IItem[] itemsPacked, int xPosition, int yPosition, int zPosition) {
+    public Delivery(Integer id, IVehicle vehicle, double currentWeight, IDriver driver, IPosition position, IItem[] itemsPacked) {
         Id = ++IDCOUNT;
         Vehicle = vehicle;
         CurrentWeight = currentWeight;
         Driver = driver;
         Position = position;
         ItemsPacked = itemsPacked;
-        this.xPosition = xPosition;
-        this.yPosition = yPosition;
-        this.zPosition = zPosition;
     }
 
     @Override
@@ -91,13 +93,14 @@ public class Delivery implements IDelivery {
             if ( getVehicle().equals(null) || getDriver().equals(null) ){ // aparece me que da sempre false qd tenho um construtor que incializa tudo a null menos o ID como corrijo
                 throw new DeliveryException("Vehicle/Driver not assigned...");
             } else if (getVehicle().getStatus().equals(VehicleStatus.IN_PREPARATION)){
-                //if item is overlaping or outside(overflowing)
-                if( getCurrentWeight() >= getVehicle().getMaxWeight() ){
-                    throw new DeliveryException("Weight exceeds Limits...");
-                } else if( Arrays.deepEquals(this.getVehicle().getTransportationTypes(), var1.getTransportationTypes())){ //does this work like i think it does??
-                    // codigo de load...
-
-                } else throw new DeliveryException("Transportation Restrictions don't match...");
+                if (/* condicao de volume para saber se ha espaco para outro item */){
+                    //if item is overlaping or outside(overflowing)
+                    if( getCurrentWeight() >= getVehicle().getMaxWeight() ){
+                        throw new DeliveryException("Weight exceeds Limits...");
+                    } else if( Arrays.deepEquals(this.getVehicle().getTransportationTypes(), var1.getTransportationTypes())){ //does this work like i think it does??
+                        // codigo de load...
+                    } else throw new DeliveryException("Transportation Restrictions don't match...");
+                } else throw new DeliveryException("Items Overflowing...");
             } else throw new DeliveryException("Vehicle given isn't IN_PREPARATION...");
         } else throw new DeliveryException("Item status isn't NON_DELIVERED...");
     }
