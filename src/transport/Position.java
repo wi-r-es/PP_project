@@ -13,8 +13,10 @@ public class Position implements IPosition {
     }
 
     @Override
-    public void setX(int x) {
-        X = x;
+    public void setX(int x) throws PositionException {
+        if( x<0) {throw new PositionException(" X Coordinate is negative...");}
+        else X = x;
+
     }
 
     @Override
@@ -23,8 +25,9 @@ public class Position implements IPosition {
     }
 
     @Override
-    public void setY(int y) {
-        Y = y;
+    public void setY(int y) throws PositionException {
+        if( y<0) {throw new PositionException(" Y Coordinate is negative...");}
+        else Y = y;
     }
 
     @Override
@@ -33,8 +36,9 @@ public class Position implements IPosition {
     }
 
     @Override
-    public void setZ(int z) {
-        Z = z;
+    public void setZ(int z) throws PositionException {
+        if( z<0) {throw new PositionException(" Z Coordinate is negative...");}
+        else Z = z;
     }
     @Override
     public PositionAvailability getPStatus(){return positionStatus;}

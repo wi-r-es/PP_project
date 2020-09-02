@@ -8,8 +8,10 @@ public class Person implements IPerson {
     private final LocalDate BirthDate;
     private IAddress Address;
 
+    private static Integer IDCOUNT=0;
+
     public Person(Integer id, String name, LocalDate birthDate, IAddress address) {
-        Id = id;
+        Id = ++IDCOUNT;
         Name = name;
         BirthDate = birthDate;
         Address = address;

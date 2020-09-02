@@ -78,18 +78,12 @@ public class Item implements IItem {
         return Depth;
     }
 
-    public void setDepth(int depth) {
-        Depth = depth;
-    }
 
     @Override
     public int getHeight() {
         return Height;
     }
 
-    public void setHeight(int height) {
-        Height = height;
-    }
 
     @Override
     public int getLength() {

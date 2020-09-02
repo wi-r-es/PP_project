@@ -3,6 +3,7 @@ package transport;
 import exceptions.DeliveryException;
 import hr.IDestination;
 import hr.IDriver;
+import hr.LicenseType;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,26 +12,39 @@ import java.util.List;
 
 public class Delivery implements IDelivery {
 
-    private Integer Id;
+    private final Integer Id;
     private IVehicle Vehicle;
     private double CurrentWeight;
     private IDriver Driver;
     private IPosition Position;
-    private List<IItem> ItemsPacked = new ArrayList<IItem>();
+    private IItem[] ItemsPacked;
     private int xPosition;
     private int yPosition;
     private int zPosition;
 
     // private static int MAX_ITEMS_PER_CARGO = 10;
+    private static Integer IDCOUNT=0;
 
-
-    public Delivery(Integer id, IVehicle vehicle, double currentWeight, IDriver driver, IPosition position, List<IItem> itemsPacked) {
+    public Delivery(Integer id) {
         Id = id;
+        Vehicle = null;
+        CurrentWeight = 0;
+        Driver = null;
+        Position = null;
+        ItemsPacked = null;
+
+    }
+
+    public Delivery(Integer id, IVehicle vehicle, double currentWeight, IDriver driver, IPosition position, IItem[] itemsPacked, int xPosition, int yPosition, int zPosition) {
+        Id = ++IDCOUNT;
         Vehicle = vehicle;
         CurrentWeight = currentWeight;
         Driver = driver;
         Position = position;
         ItemsPacked = itemsPacked;
+        this.xPosition = xPosition;
+        this.yPosition = yPosition;
+        this.zPosition = zPosition;
     }
 
     @Override
@@ -40,8 +54,30 @@ public class Delivery implements IDelivery {
 
     @Override
     public void setVehicle(IVehicle var1, IDriver var2) throws DeliveryException {
-        this.Vehicle = var1;
-        this.Driver = var2;
+        if( this.isEmpty() ){
+            if( var1.getStatus().equals(VehicleStatus.FREE) ){
+                if( var2.getStatus().equals(DriverStatus.FREE) ){
+                    LicenseType[] tempV = new LicenseType[var1.getAllowedLicenses().length];
+                    boolean allLicensesCheck = false;
+                    try{
+                        for (int i=0; i< tempV.length ; i++){
+                            if ( var2.haveLicense(tempV[i]) ){
+                                allLicensesCheck = true;
+                            }else allLicensesCheck = false;
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e){
+                            System.err.println("Index Out Of Bounds...");
+                    }
+                    if( allLicensesCheck ){
+                        this.Vehicle=var1;
+                        this.Driver=var2;
+                        var1.setStatus(VehicleStatus.IN_PREPARATION);
+                        var2.setStatus(DriverStatus.ASSIGNED);
+                    } else throw new DeliveryException("Driver doesn't have required Licenses for specified vehicle...");
+                } else throw new DeliveryException("Driver isn't free...");
+            } else throw new DeliveryException("Vehicle isn't free...");
+        } else throw new DeliveryException("An item was already assigned to the delivery...");
+        throw new DeliveryException("Parameter is null");
     }
 
     @Override
@@ -49,79 +85,21 @@ public class Delivery implements IDelivery {
         return this.Vehicle;
     }
 
-    public int getxPosition() {
-        return xPosition;
-    }
-
-    public void setxPosition(int xPosition) {
-        this.xPosition = xPosition;
-    }
-
-    public int getyPosition() {
-        return yPosition;
-    }
-
-    public void setyPosition(int yPosition) {
-        this.yPosition = yPosition;
-    }
-
-    public int getzPosition() {
-        return zPosition;
-    }
-
-    public void setzPosition(int zPosition) {
-        this.zPosition = zPosition;
-    }
-
-    public boolean isPositionFree(IPosition var1) { // se sobrar tempo, tentar fazer com os height, length e depth para ficar mais correto
-                                                    // Exato, eu se fosse stor considerava bué se fizesses da forma correta, mas deixa para fim
-        return (this.Position.getPStatus()).equals(PositionAvailability.FREE);
-
-    }
-
-
-    public void subWeight(IItem var1){
-        this.CurrentWeight -= var1.getWeight();
-    }
-
     @Override
     public boolean load(IItem var1, IPosition var2) throws DeliveryException {
-        if (isEmpty()) {
-            this.Position = var2;
-            this.Position.setPStatus(PositionAvailability.OCCUPIED);
-            this.ItemsPacked.add(var1);
-            this.CurrentWeight += var1.getWeight();
+        if ( var1.getStatus().equals(ItemStatus.NON_DELIVERED ) ){
+            if ( getVehicle().equals(null) || getDriver().equals(null) ){ // aparece me que da sempre false qd tenho um construtor que incializa tudo a null menos o ID como corrijo
+                throw new DeliveryException("Vehicle/Driver not assigned...");
+            } else if (getVehicle().getStatus().equals(VehicleStatus.IN_PREPARATION)){
+                //if item is overlaping or outside(overflowing)
+                if( getCurrentWeight() >= getVehicle().getMaxWeight() ){
+                    throw new DeliveryException("Weight exceeds Limits...");
+                } else if( Arrays.deepEquals(this.getVehicle().getTransportationTypes(), var1.getTransportationTypes())){ //does this work like i think it does??
+                    // codigo de load...
 
-            //inicio do arrumamento e ocupacao do espaco mais realista...
-            setxPosition(var1.getHeight()); //why da fuck 'e que isto da erro ? Dava erro prk tu tinhas isto depois do return true, ou seja nunca na vida chegava a este codigo, logo o compilador avisa-te e dá erro
-            setyPosition(var1.getLength());
-            setzPosition(var1.getDepth());
-
-            return true;
-
-        } else {
-
-            if (isPositionFree(var2)) {
-                int counter = 0;
-                // no javadoc diz Load/add a new item to the delivery in a given position considering transportation restrictions.
-                for (int i = 0; i < ItemsPacked.size(); i++) {
-                    if (Arrays.equals((ItemsPacked.get(i).getTransportationTypes()), var1.getTransportationTypes())) {
-                        counter++;
-                    }
-                }
-                if (counter == ItemsPacked.size()) { //check if all the existing items are in the same transportation type category
-                    this.Position = var2;
-                    this.Position.setPStatus(PositionAvailability.OCCUPIED);
-                    this.ItemsPacked.add(var1);
-                    this.CurrentWeight += var1.getWeight();
-                    return true;
-                } else {
-                    throw new DeliveryException("Transportation Types don't match...");
-                }
-            } else{
-                throw new DeliveryException("Given Position Is Occupied...");
-            }
-        }
+                } else throw new DeliveryException("Transportation Restrictions don't match...");
+            } else throw new DeliveryException("Vehicle given isn't IN_PREPARATION...");
+        } else throw new DeliveryException("Item status isn't NON_DELIVERED...");
     }
 
 
@@ -144,8 +122,7 @@ public class Delivery implements IDelivery {
                 }
             }
         }
-        return false; //sem esta linha aparece como erro for some reason...
-                        //Claro, imagina pode-se dar o caso de entrar no primeiro else mas nunca entrar no if, caso isso aconteça nao passa por nenhum return... por isso é que te dá erro
+        return false;
     }
 
     @Override
@@ -172,7 +149,7 @@ public class Delivery implements IDelivery {
 
     @Override
     public boolean isEmpty() {
-        return ItemsPacked.isEmpty();
+
     }
 
     @Override
@@ -261,4 +238,45 @@ public class Delivery implements IDelivery {
     public void export(String var1) throws IOException {
         //Serialize an object to a specific format that can be stored.
     }
+
+
+    public IDriver getDriver() {
+        return Driver;
+    }
+
+    public int getxPosition() {
+        return xPosition;
+    }
+
+    public void setxPosition(int xPosition) {
+        this.xPosition = xPosition;
+    }
+
+    public int getyPosition() {
+        return yPosition;
+    }
+
+    public void setyPosition(int yPosition) {
+        this.yPosition = yPosition;
+    }
+
+    public int getzPosition() {
+        return zPosition;
+    }
+
+    public void setzPosition(int zPosition) {
+        this.zPosition = zPosition;
+    }
+
+    public boolean isPositionFree(IPosition var1) { // se sobrar tempo, tentar fazer com os height, length e depth para ficar mais correto
+        // Exato, eu se fosse stor considerava bué se fizesses da forma correta, mas deixa para fim
+        return (this.Position.getPStatus()).equals(PositionAvailability.FREE);
+
+    }
+
+
+    public void subWeight(IItem var1){
+        this.CurrentWeight -= var1.getWeight();
+    }
+
 }

@@ -11,17 +11,10 @@ public class Truck extends Vehicle implements ITruck {
 
     @Override
     public boolean swapCargoBox(IBox var1) {
-        transport.VehicleStatus temp = super.getStatus(); /* is this well coded xD ? */
-
-        /* Swap CargoBox if status is free */
-        switch(temp) {    /* Check this switch condition  */
-            case FREE: {
-                setCargoBox(var1);
-                return true;
-            }
-            default: {
-                return false;
-            }
-        }
+        if ( this.getStatus().equals(VehicleStatus.FREE )){
+            this.setCargoBox(var1);
+            return true;
+        } else return false;
     }
 }
+

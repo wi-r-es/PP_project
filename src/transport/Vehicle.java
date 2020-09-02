@@ -2,6 +2,8 @@ package transport;
 
 import hr.LicenseType;
 
+import java.util.Arrays;
+
 public class Vehicle implements IVehicle{
 
     private LicenseType[] NeededLicenses;
@@ -23,7 +25,18 @@ public class Vehicle implements IVehicle{
 
     @Override
     public LicenseType[] getAllowedLicenses() {
-        return NeededLicenses;
+        LicenseType[] tempLicense = new LicenseType[15]; //maybe por um valor mais baixo...
+        int indexTemp = 0;
+        try {
+            for( int i=0 ; i<NeededLicenses.length ; i++){
+                tempLicense[indexTemp++]=NeededLicenses[i];
+            }
+            Arrays.sort(tempLicense);
+            return tempLicense;
+        }catch (ArrayIndexOutOfBoundsException e){
+            System.err.println("Array index out of bounds...");
+        }
+        return null;
     }
 
     @Override
@@ -57,7 +70,16 @@ public class Vehicle implements IVehicle{
 
     @Override
     public TransportationTypes[] getTransportationTypes() {
-        return TransportationTypes;
+        TransportationTypes[] tempTT = new TransportationTypes[4]; //maybe por um valor mais baixo...
+        int indexTemp = 0;
+        try {
+            for( int i=0 ; i<TransportationTypes.length ; i++){
+                tempTT[indexTemp++]=TransportationTypes[i];
+            }
+            return tempTT;
+        }catch (ArrayIndexOutOfBoundsException e){
+            System.err.println("Array index out of bounds...");
+        }
+        return null;
     }
-
 }
