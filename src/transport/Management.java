@@ -489,7 +489,7 @@ public class Management implements IManagement {
                 int[] VehiclesIndexes = new int[10];
                 int counter= 0;
                 for( int i =0; i< VehiclesList.length ; i++){
-                    if ( ( VehiclesList[i].getTransportationTypes().equals(var2) ) && ( VehiclesList[i].getStatus().equals(var1) ){
+                    if ( ( VehiclesList[i].getTransportationTypes().equals(var2) ) && ( VehiclesList[i].getStatus().equals(var1) ){ //Estás a comparar TransportationTypes[] com var2 que é uma TransportationType, tens de fazer um for para comparar cada TransportationType com var2
                         VehiclesIndexes[numOfVehicles]=i;
                         numOfVehicles++;
                     }
@@ -521,9 +521,9 @@ public class Management implements IManagement {
     public void deliveredItem(String var1, String var2) throws Exception { /* var1 ID Delivery var2 item reference */
 
         try {
-            for (IDelivery DeliveryTemp : Deliveries) {
+            for (IDelivery DeliveryTemp : DeliveriesList) {
                 if (var1.equals(DeliveryTemp.getId())) {
-                    for (IItem ItemTemp : Items) {
+                    for (IItem ItemTemp : ItemsList) {
                         if (var2.equals(ItemTemp.getReference())) {
                             ItemTemp.setStatus( ItemStatus.DELIVERED ); //estou a mudar o valor na lista ?? Sim, estás, está bem feito!
                         }
@@ -565,7 +565,7 @@ public class Management implements IManagement {
             for( IItem temp : ItemsList){
                 if( (temp.getReference()).equals(var1) ) return temp.getStatus();
             }
-            throw new Exception("Item doesn't exists");
+            throw new Exception("Item doesn't exist");
         }
         catch(ArrayIndexOutOfBoundsException e){
             System.err.println("Index out of bounds...");
