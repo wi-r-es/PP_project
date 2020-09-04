@@ -1,5 +1,7 @@
 package hr;
 
+import org.json.simple.JSONObject;
+
 public class Address implements IAddress{
 
     private String City;
@@ -74,5 +76,16 @@ public class Address implements IAddress{
         }//confirmar se parametro e da mesma classe do recetor
         Address a = (Address) obj;
         return ( City.equals(a.getCity()) && Country.equals(a.getCountry()) && Number==a.getNumber() && State.equals(a.getState()) && Street.equals(a.getStreet()) );
+    }
+    @Override
+    public JSONObject getObject(){
+        JSONObject o1 = new JSONObject();
+        o1.put("city", this.City);
+        o1.put("country" , this.Country);
+        o1.put("number", this.Number );
+        o1.put("state", this.State);
+        o1.put("street", this.Street);
+        return o1;
+
     }
 }

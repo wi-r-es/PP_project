@@ -1,5 +1,7 @@
 package hr;
 
+import org.json.simple.JSONObject;
+
 public class Destination implements IDestination {
 
     private String Name;
@@ -35,5 +37,15 @@ public class Destination implements IDestination {
         }//confirmar se parametro e da mesma classe do recetor
         Destination d = (Destination) obj;
         return ( Name.equals(d.getName()) && Address.equals(d.getAddress()) && GeoCoordinates.equals(d.getGeoCoordinates()) );
+    }
+
+    @Override
+    public JSONObject getObject(){
+        JSONObject o1 = new JSONObject();
+        o1.put("name", this.Name);
+        o1.put("address" , this.Address.getObject() );
+        o1.put("geocoordinates", this.GeoCoordinates.getObject() );
+        return o1;
+
     }
 }

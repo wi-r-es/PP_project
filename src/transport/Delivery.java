@@ -4,18 +4,21 @@ import exceptions.DeliveryException;
 import hr.IDestination;
 import hr.IDriver;
 import hr.LicenseType;
+import org.json.simple.JSONArray;
 
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 
-public class Delivery implements IDelivery {
+public class Delivery implements IDelivery, Serializable {
 
     private final Integer Id;
     private IVehicle Vehicle;
     private double CurrentWeight;
     private IDriver Driver;
     private IPosition Position;
-    private IItem[] ItemsPacked;
+    private IItem[] ItemsPacked = new IItem[MAXITEMSDELIVERY];
     private int insidePosition = 0;
 
     private static Integer IDCOUNT=0;
@@ -29,7 +32,6 @@ public class Delivery implements IDelivery {
         CurrentWeight = 0;
         Driver = null;
         Position = null;
-        ItemsPacked = new ItemPacked[MAXITEMSDELIVERY];
 
     }
 
@@ -57,9 +59,7 @@ public class Delivery implements IDelivery {
                     boolean allLicensesCheck = false;
                     try{
                         for (int i=0; i< tempV.length ; i++){
-                            if ( var2.haveLicense(tempV[i]) ){
-                                allLicensesCheck = true;  //esta bem pensado ?
-                            }else allLicensesCheck = false;
+                            allLicensesCheck = var2.haveLicense(tempV[i]);  //esta bem pensado ?
                         }
                     } catch (ArrayIndexOutOfBoundsException e){
                             System.err.println("Index Out Of Bounds...");
@@ -94,13 +94,13 @@ public class Delivery implements IDelivery {
                 } else if (Arrays.deepEquals(this.getVehicle().getTransportationTypes(), var1.getTransportationTypes())) { //does this work like i think it does??
                     if (!isEmpty()) {
                         try{
-                        for (IItem tempItem : ItemsPacked) {
-                            if (var1.getReference().equals(tempItem.getReference())) {
-                                return false;
+                            for (IItem tempItem : ItemsPacked) {
+                                if (var1.getReference().equals(tempItem.getReference())) {
+                                    return false;
+                                }
                             }
-                        }
-                        for (int i = 0; i < insidePosition; i++) {   //canto superior
-                            if ((((ItemPacked) ItemsPacked[i]).getPosition().getX() < var2.getX()) &&
+                            for (int i = 0; i < insidePosition; i++) {   //canto superior
+                                if ((((ItemPacked) ItemsPacked[i]).getPosition().getX() < var2.getX()) &&
                                     ((((ItemPacked) ItemsPacked[i]).getPosition().getX()) + ItemsPacked[i].getLength() > var2.getX()) &&
                                     (((ItemPacked) ItemsPacked[i]).getPosition().getY() < var2.getY()) &&
                                     ((((ItemPacked) ItemsPacked[i]).getPosition().getY()) + ItemsPacked[i].getHeight() > var2.getY()) &&
@@ -113,13 +113,20 @@ public class Delivery implements IDelivery {
                                     ((((ItemPacked) ItemsPacked[i]).getPosition().getY()) + ItemsPacked[i].getHeight() > var2.getY() + var1.getHeight()) &&
                                     (((ItemPacked) ItemsPacked[i]).getPosition().getZ() < var2.getZ() + var1.getDepth()) &&
                                     ((((ItemPacked) ItemsPacked[i]).getPosition().getZ()) + ItemsPacked[i].getDepth() > var2.getZ() + var1.getDepth())
-                            ) {
-                                throw new DeliveryException("Object Collision...");
-                            }
-                        } } catch(ArrayIndexOutOfBoundsException e){
+                                ) {
+                                    throw new DeliveryException("Object Collision...");
+                                }
+                        }
+                        } catch(ArrayIndexOutOfBoundsException e){
                                 System.err.println("Index out of Bounds");
                             }
                     } // Delivery is Empty || Objects don't Collide
+                    if ( insidePosition==ItemsPacked.length-1 ){
+                        ItemsPacked = Arrays.copyOf(ItemsPacked, ItemsPacked.length+1); //does this work correctly?
+                        ItemsPacked[ItemsPacked.length-1] = var1;
+                        ItemsPacked[++insidePosition].setStatus(ItemStatus.ASSIGNED);
+                        return true;
+                    }
                     ItemsPacked[insidePosition] = new ItemPacked(var1, var2);
                     ItemsPacked[insidePosition++].setStatus(ItemStatus.ASSIGNED);
                     return true;
@@ -193,9 +200,7 @@ public class Delivery implements IDelivery {
             }
             Arrays.sort(ItemsPacked);
             updateCurrentWeight();
-            if (confirmDelete > ItemsPacked.length){
-                return true;
-            } else return false;
+            return confirmDelete > ItemsPacked.length;
         } catch (ArrayIndexOutOfBoundsException e){
             System.err.println("Index out of bounds...");
             return false;
@@ -204,9 +209,7 @@ public class Delivery implements IDelivery {
 
     @Override
     public boolean isEmpty() {
-        if( insidePosition == 0){
-            return true;
-        } return false;
+        return insidePosition == 0;
     }
 
     @Override
@@ -303,13 +306,27 @@ public class Delivery implements IDelivery {
         return Driver;
     }
 
-    @Override //falta este
+    @Override //For items
     public void export(String var1) throws IOException {
-        //Serialize an object to a specific format that can be stored.
+        try( FileWriter writer = new FileWriter("/home/wires/Documents/PP_project/test.txt",true);) {
+            //Serialize an object to a specific format that can be stored.
+            //String items = JSONArray.toJSONString(Arrays.asList(arrraytest));
+            writer.write("[");
+            for (int i = 0; i < ItemsPacked.length; i++) {
+                writer.write(ItemsPacked[i].getObject().toString());
+                if ( i+1 < ItemsPacked.length){
+                    writer.write(",");}
+
+            }
+            writer.write("]");
+
+        }catch (IOException e){
+            System.err.println(e.getMessage());
+        }
+
     }
 
+    public void exportTransportationTypes(String var1) throws IOException {
 
-
-
-
+    }
 }

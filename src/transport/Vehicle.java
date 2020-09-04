@@ -70,7 +70,7 @@ public class Vehicle implements IVehicle{
 
     @Override
     public TransportationTypes[] getTransportationTypes() {
-        TransportationTypes[] tempTT = new TransportationTypes[4]; //maybe por um valor mais baixo...
+        TransportationTypes[] tempTT = new TransportationTypes[4];
         int indexTemp = 0;
         try {
             for( int i=0 ; i<TransportationTypes.length ; i++){

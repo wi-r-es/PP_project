@@ -15,8 +15,6 @@ public interface IPosition {
 
     void setZ(int var1) throws PositionException;
 
-    public PositionAvailability getPStatus();
 
-    public void setPStatus(PositionAvailability var1);
 }
 

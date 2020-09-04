@@ -4,8 +4,6 @@ import exceptions.PositionException;
 
 public class Position implements IPosition {
     private int X, Y, Z;
-    private PositionAvailability positionStatus;
-    /* Position type FREE OCCUPIED*/
 
     @Override
     public int getX() {
@@ -40,10 +38,6 @@ public class Position implements IPosition {
         if( z<0) {throw new PositionException(" Z Coordinate is negative...");}
         else Z = z;
     }
-    @Override
-    public PositionAvailability getPStatus(){return positionStatus;}
-    @Override
-    public void setPStatus(PositionAvailability var1) { positionStatus = var1;}
 
 
 }

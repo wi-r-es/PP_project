@@ -1,5 +1,7 @@
 package hr;
 
+import org.json.simple.JSONObject;
+
 public interface IAddress {
     String getCity();
 
@@ -20,5 +22,7 @@ public interface IAddress {
     void setState(String var1);
 
     void setStreet(String var1);
+
+    JSONObject getObject();
 }
 

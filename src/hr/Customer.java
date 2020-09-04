@@ -1,5 +1,7 @@
 package hr;
 
+import org.json.simple.JSONObject;
+
 import java.time.LocalDate;
 
 public class Customer extends Person implements ICustomer{
@@ -13,5 +15,13 @@ public class Customer extends Person implements ICustomer{
     @Override
     public String getVat() {
         return Vat;
+    }
+
+    @Override
+    public JSONObject getObject(){
+        JSONObject o1 = new JSONObject();
+        o1.put("id", this.getId());
+        o1.put("name", this.getName());
+        o1.put("vat", this.getVat());
     }
 }

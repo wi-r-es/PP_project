@@ -2,6 +2,7 @@ package transport;
 
 import hr.ICustomer;
 import hr.IDestination;
+import org.json.simple.JSONObject;
 
 public class Item implements IItem {
 
@@ -111,7 +112,21 @@ public class Item implements IItem {
         return Volume;
     }
 
+    @Override
+    public JSONObject getObject(){
+        JSONObject o1 = new JSONObject();
+        o1.put("reference", this.Reference);
+        o1.put("description" , this.Description);
+        o1.put("transportation type", this.TransportationType );
+        o1.put("destination", this.Destination.getObject());
+        o1.put("depth", this.Depth);
+        o1.put("height", this.Height);
+        o1.put("length", this.Length);
+        o1.put("volume", this.Volume);
+        o1.put("weight", this.Weight);
+        return o1;
 
+    }
 
 
 }

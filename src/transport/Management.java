@@ -5,10 +5,9 @@ import exceptions.ManagementException;
 import hr.ICustomer;
 import hr.IDestination;
 import hr.IDriver;
-import org.json.simple.ItemList;
+import hr.LicenseType;
 
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 public class Management implements IManagement {
@@ -33,6 +32,7 @@ public class Management implements IManagement {
                 if(ItemsList[0] == null){
                     try{
                         ItemsList[0] = var1;
+                        return true;
                     }catch (ArrayStoreException e){
                         System.err.println("Wrong type of object to store...");
                     }
@@ -54,8 +54,13 @@ public class Management implements IManagement {
                                     if( ItemsList[i-1] != null  && ItemsList[i+1] == null ){
                                             ItemsList[i] = var1;
                                             return true;
-                                        }
-                                } else {Arrays.sort(ItemsList, i-1 , ItemsList.length); i--;}
+                                        }else {Arrays.sort(ItemsList, i-1 , ItemsList.length); i--;}
+                                }
+                                if ( i==ItemsList.length-1 ){
+                                    ItemsList = Arrays.copyOf(ItemsList, ItemsList.length+1); //does this work correctly?
+                                    ItemsList[ItemsList.length-1] = var1;
+                                    return true;
+                                }
                             }
                         } catch (ArrayIndexOutOfBoundsException e){
                             System.err.println("Index out of bounds...");
@@ -136,11 +141,9 @@ public class Management implements IManagement {
             try {
                 int numOfItems = 0;
                 int[] ItemsIndexes = new int[25];
-                int counter= 0;
                 for( int i =0; i< ItemsList.length ; i++){
                     if ( ItemsList[i].getCustomer().equals(var1) ){
-                        ItemsIndexes[numOfItems]=i;
-                        numOfItems++;
+                        ItemsIndexes[numOfItems++]=i; // so e incrementado depois de adicionado ?
                     }
                 }
                 IItem[] ItemsCopy = new IItem[numOfItems];
@@ -167,11 +170,9 @@ public class Management implements IManagement {
             try {
                 int numOfItems = 0;
                 int[] ItemsIndexes = new int[25];
-                int counter= 0;
                 for( int i =0; i< ItemsList.length ; i++){
                     if ( ItemsList[i].getDestination().equals(var1) ){
-                        ItemsIndexes[numOfItems]=i;
-                        numOfItems++;
+                        ItemsIndexes[numOfItems++]=i;
                     }
                 }
                 IItem[] ItemsCopy = new IItem[numOfItems];
@@ -195,15 +196,18 @@ public class Management implements IManagement {
             if (ItemsList[0] == null){
                 System.out.println("No Items to be found..."); //double-check if ItemsList is empty
             }
+
         } else {
             try {
                 int numOfItems = 0;
-                int[] ItemsIndexes = new int[25];
-                int counter= 0;
+                int[] ItemsIndexes = new int[MAXITEMS];
                 for( int i =0; i< ItemsList.length ; i++){
-                    if ( Arrays.deepEquals(ItemsList[i].getTransportationTypes(), var1) ){ //a tal cena do transportation types
-                        ItemsIndexes[numOfItems]=i;
-                        numOfItems++;
+                    TransportationTypes[] tempTT = ItemsList[i].getTransportationTypes( );
+                    for (int j = 0; j < tempTT.length; j++) {
+                        if ( tempTT[j].equals(var1) ){
+                            ItemsIndexes[numOfItems++]=i;
+                            break;
+                        }
                     }
                 }
                 IItem[] ItemsCopy = new IItem[numOfItems];
@@ -229,12 +233,10 @@ public class Management implements IManagement {
         } else {
             try {
                 int numOfItems = 0;
-                int[] ItemsIndexes = new int[25];
-                int counter= 0;
+                int[] ItemsIndexes = new int[MAXITEMS];
                 for( int i =0; i< ItemsList.length ; i++){
                     if ( ItemsList[i].getStatus().equals(var1) ){
-                        ItemsIndexes[numOfItems]=i;
-                        numOfItems++;
+                        ItemsIndexes[numOfItems++]=i;
                     }
                 }
                 IItem[] ItemsCopy = new IItem[numOfItems];
@@ -252,11 +254,12 @@ public class Management implements IManagement {
     @Override
     public boolean addVehicle(IVehicle var1) throws ManagementException {
 
-        if (!(var1.getStatus().equals(VehicleStatus.IN_MAINTAINANCE))) { //esta correto right? so avanca se o status do veiculo a adicionar for diferente de in_maintainance
+        if (!(var1.getStatus().equals(VehicleStatus.IN_MAINTAINANCE))) {
 
             if (VehiclesList[0] == null) {
                 try{
                     VehiclesList[0] = var1;
+                    return true;
                 }catch (ArrayStoreException e){
                     System.err.println("Wrong type of object to store...");
                 }
@@ -279,8 +282,12 @@ public class Management implements IManagement {
                                     VehiclesList[i] = var1;
                                     return true;
                                 } else {
-                                    Arrays.sort(VehiclesList, i - 1, VehiclesList.length);
-                                    i--;
+                                    Arrays.sort(VehiclesList, i - 1, VehiclesList.length); i--;
+                                }
+                                if ( i==VehiclesList.length-1 ){
+                                    VehiclesList = Arrays.copyOf(VehiclesList, VehiclesList.length+1); //does this work correctly?
+                                    VehiclesList[VehiclesList.length-1] = var1;
+                                    return true;
                                 }
                             }
                         }
@@ -302,6 +309,7 @@ public class Management implements IManagement {
             if(DriversList[0] == null){
                 try{
                     DriversList[0] = var1;
+                    return true;
                 }catch (ArrayStoreException e){
                     System.err.println("Wrong type of object to store...");
                 }
@@ -324,6 +332,11 @@ public class Management implements IManagement {
                                     DriversList[i] = var1;
                                     return true;
                                 } else {Arrays.sort(DriversList, i-1 , DriversList.length); i--;}
+                            }
+                            if ( i==DriversList.length-1 ){
+                                DriversList = Arrays.copyOf(DriversList, DriversList.length+1); //does this work correctly?
+                                DriversList[DriversList.length-1] = var1;
+                                return true;
                             }
                         }
                     }  catch (ArrayIndexOutOfBoundsException e) {
@@ -355,7 +368,7 @@ public class Management implements IManagement {
                             DriversList[i]=null;
                             Arrays.sort(DriversList, i, DriversList.length);
                             return true;
-                        } return false; // estou a fazer isto bem ?
+                        } return false;
                     }
                 }
             } catch (ArrayIndexOutOfBoundsException e){
@@ -425,12 +438,10 @@ public class Management implements IManagement {
         } else {
             try {
                 int numOfVehicles = 0;
-                int[] VehiclesIndexes = new int[10];
-                int counter= 0;
+                int[] VehiclesIndexes = new int[MAXVEHICLES];
                 for( int i =0; i< VehiclesList.length ; i++){
                     if ( VehiclesList[i].getStatus().equals(var1) ){
-                        VehiclesIndexes[numOfVehicles]=i;
-                        numOfVehicles++;
+                        VehiclesIndexes[numOfVehicles++]=i;
                     }
                 }
                 IVehicle[] VehiclesCopy = new IVehicle[numOfVehicles];
@@ -455,16 +466,18 @@ public class Management implements IManagement {
         } else {
             try {
                 int numOfVehicles = 0;
-                int[] VehiclesIndexes = new int[10];
-                int counter= 0;
+                int[] VehiclesIndexes = new int[MAXVEHICLES/2];
                 for( int i =0; i< VehiclesList.length ; i++){
-                    if ( VehiclesList[i].getTransportationTypes().equals(var1) ){
-                        VehiclesIndexes[numOfVehicles]=i;
-                        numOfVehicles++;
+                    TransportationTypes[] tempTT = VehiclesList[i].getTransportationTypes( );
+                    for (int j = 0; j < tempTT.length ; j++) {
+                        if( tempTT[i].equals(var1) ){
+                            VehiclesIndexes[numOfVehicles++]=i;
+                            break;
+                        }
                     }
                 }
                 IVehicle[] VehiclesCopy = new IVehicle[numOfVehicles];
-                for (int i =0; i<= numOfVehicles; i++) {
+                for (int i =0; i< numOfVehicles; i++) {
                     VehiclesCopy[i] = VehiclesList[VehiclesIndexes[i]];
                 }
                 return VehiclesCopy;
@@ -486,12 +499,16 @@ public class Management implements IManagement {
         } else {
             try {
                 int numOfVehicles = 0;
-                int[] VehiclesIndexes = new int[10];
-                int counter= 0;
+                int[] VehiclesIndexes = new int[MAXVEHICLES/2];
                 for( int i =0; i< VehiclesList.length ; i++){
-                    if ( ( VehiclesList[i].getTransportationTypes().equals(var2) ) && ( VehiclesList[i].getStatus().equals(var1) ){ //Estás a comparar TransportationTypes[] com var2 que é uma TransportationType, tens de fazer um for para comparar cada TransportationType com var2
-                        VehiclesIndexes[numOfVehicles]=i;
-                        numOfVehicles++;
+                    if ( VehiclesList[i].getStatus().equals(var1) ){
+                        TransportationTypes[] tempTT = VehiclesList[i].getTransportationTypes( );
+                        for (int j = 0; j < tempTT.length ; j++) {
+                            if( tempTT[i].equals(var2) ){
+                                VehiclesIndexes[numOfVehicles++]=i;
+                                break;
+                            }
+                        }
                     }
                 }
                 IVehicle[] VehiclesCopy = new IVehicle[numOfVehicles];
@@ -506,52 +523,133 @@ public class Management implements IManagement {
         return null;
     }
 
-    @Override //por fazer
+    @Override
     public boolean addDelivery(IDelivery var1) throws ManagementException {
-
-        IItem[] tempItem = var1.getRemainingItems();
-        if ( tempItem.getStatus( ))
-        //tratar delivery 1
-
-
-
+        if (var1==null){ System.err.println("Parameter is null...");}
+        else{
+            if (var1.isEmpty()) {
+                throw new ManagementException("Delivery is empty..."); //or the items cannot be stored inside the vehicle ??? how the fuck | something com o load mb?
+            }
+            try {
+                IItem[] Itemstemp = var1.getRemainingItems();
+                int length = var1.getRemainingItems().length;
+                boolean ItemIsOnSystem = true;
+                for (int i = 0; i < length; i++) {
+                    if (!Itemstemp[i].getStatus().equals(ItemStatus.ASSIGNED)) {
+                        throw new ManagementException("Delivery with Items not ASSIGNED...");
+                    }
+                    for (int j = 0; j < ItemsList.length; j++) {
+                        ItemIsOnSystem = Itemstemp[i].getReference().equals(ItemsList[j].getReference());
+                    }
+                }
+                if (!ItemIsOnSystem) {
+                    throw new ManagementException("Delivery Item isn't on List...");
+                }
+                if (var1.getVehicle() == null) {
+                    throw new ManagementException("Delivery has no Vehicle assigned...");
+                } else {
+                    try {
+                        for (int i = 0; i < Itemstemp.length; i++) {
+                            if (!(Arrays.deepEquals(var1.getVehicle().getTransportationTypes(), Itemstemp[i].getTransportationTypes()))) {
+                                throw new ManagementException("Delivery Vehicle Transportation Types don't mach Item Transportation types...");
+                            }
+                        }
+                        LicenseType[] tempLicense = var1.getVehicle().getAllowedLicenses();
+                        for (int i = 0; i < tempLicense.length; i++) {
+                            if (var1.getDriver() == null || !var1.getDriver().haveLicense(tempLicense[i])) {
+                                throw new ManagementException("Delivery has no Driver or Driver cannot drive delivery vehicle...");
+                            }
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e) {
+                        System.err.println("Index out of Bounds...");
+                    } catch (NullPointerException e) { //in case var1.getVehicle().getAllowedLicenses() returns null
+                        System.err.println(e.getMessage());
+                    }
+                    if ((DeliveriesList[0]==null)){
+                        try{
+                            DeliveriesList[0] = var1;
+                            return true;
+                        }catch (ArrayStoreException e){
+                            System.err.println("Wrong type of object to store...");
+                        }
+                    }
+                    boolean DeliveryNonExistence = false;
+                    try{
+                        for(IDelivery tempDelvr : DeliveriesList ){ //deep check if item already exists in inventory
+                            if( !(tempDelvr.getId().equals(var1.getId())) ){
+                                DeliveryNonExistence = true;
+                            }
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e){
+                        System.err.println("Index out of bounds...");
+                    }
+                    if( DeliveryNonExistence ){
+                        try {
+                            for( int i =1; i< DeliveriesList.length ; i++){
+                                if(DeliveriesList[i] == null){
+                                    if( DeliveriesList[i-1] != null  && DeliveriesList[i+1] == null ){
+                                        DeliveriesList[i] = var1;
+                                        return true;
+                                    } else {Arrays.sort(ItemsList, i-1 , ItemsList.length); i--;}
+                                }
+                                if ( i==DeliveriesList.length-1 ){
+                                    DeliveriesList = Arrays.copyOf(DeliveriesList, DeliveriesList.length+1); //does this work correctly?
+                                    DeliveriesList[DeliveriesList.length-1] = var1;
+                                    return true;
+                                }
+                            }
+                        } catch (ArrayIndexOutOfBoundsException e){
+                            System.err.println("Index out of bounds...");
+                        } catch (ArrayStoreException e){
+                            System.err.println("Wrong type of object to store...");
+                        }
+                    } else return false;
+                }
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.err.println("Index out of Bounds...");
+            }
+        }
+        return false;
     }
 
-    @Override //por fazer
-    public void deliveredItem(String var1, String var2) throws Exception { /* var1 ID Delivery var2 item reference */
-
+    @Override
+    public void deliveredItem(String var1, String var2) throws Exception {
+        if ( var1==null || var2==null ) { throw new Exception("Parameter is null...");}
         try {
             for (IDelivery DeliveryTemp : DeliveriesList) {
                 if (var1.equals(DeliveryTemp.getId())) {
                     for (IItem ItemTemp : ItemsList) {
                         if (var2.equals(ItemTemp.getReference())) {
-                            ItemTemp.setStatus( ItemStatus.DELIVERED ); //estou a mudar o valor na lista ?? Sim, estás, está bem feito!
+                            if ( !ItemTemp.getStatus().equals(ItemStatus.ASSIGNED) ){ throw new Exception("Item isn't assigned...");}
+                            ItemTemp.setStatus( ItemStatus.DELIVERED );
                         }
                     }
-
                 }
             }
+        }catch (ArrayIndexOutOfBoundsException e){
+            System.err.println("Index out of bounds...");
         }
         catch (Exception e){
-            System.out.println("Error trying to access Item/Delivery"); //nao percebi bem os throws desta funcao
-                                                                        //Eles pedem Exception aqui? se pedem é isto que tens diria eu
+            System.err.println("Error trying to access Item/Delivery");
         }
-
     }
 
-    @Override //por fazer
+    @Override
     public void deliveredItem(String var1, IDestination var2) throws Exception {
-
+        if ( var1==null || var2==null ) { throw new Exception("Parameter is null...");}
         try {
             for (IDelivery DeliveryTemp : DeliveriesList) {
                 if (var1.equals(DeliveryTemp.getId())) {
-                    for (IItem ItemTemp : DeliveryTemp.getRemainingItems()) { //corrigir aqui depois de delivery estar corrigido
+                    for (IItem ItemTemp : ItemsList) {
                         if (var2.equals(ItemTemp.getDestination())) {
-                            ItemTemp.setStatus(ItemStatus.DELIVERED);
+                            if ( !ItemTemp.getStatus().equals(ItemStatus.ASSIGNED) ){ throw new Exception("Item isn't assigned...");}
+                            ItemTemp.setStatus( ItemStatus.DELIVERED );
                         }
                     }
                 }
             }
+        }catch (ArrayIndexOutOfBoundsException e){
+            System.err.println("Index out of bounds...");
         }
         catch (Exception e){
             System.err.println("Error trying to access Item/Delivery");
@@ -560,7 +658,6 @@ public class Management implements IManagement {
 
     @Override
     public ItemStatus checkItemStatus(String var1) throws Exception {
-
         try{
             for( IItem temp : ItemsList){
                 if( (temp.getReference()).equals(var1) ) return temp.getStatus();
@@ -584,6 +681,7 @@ public class Management implements IManagement {
         } catch (ArrayIndexOutOfBoundsException e){
             System.err.println("Index out of bounds");
         }
+        throw new DeliveryException(); // confirmar com neves/javadocs
     }
 
     @Override
@@ -597,6 +695,13 @@ public class Management implements IManagement {
         }  catch (ArrayIndexOutOfBoundsException e){
             System.err.println("Index out of bounds");
         }
+        throw new DeliveryException();
     }
+/*
+            • Represente uma folha de acompanhamento de um entrega (Delivery) com indicação dos itens a entregar em cada destinatário;
+            • Resumo dos itens a entregar por tipo de transporte (TransportationTypes);
+            • Resumo do estado da frota de veículos;
+            • Resumo do estado dos condutores.
+ */
 
 }

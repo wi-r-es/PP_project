@@ -1,5 +1,7 @@
 package hr;
 
+import org.json.simple.JSONObject;
+
 public class GeoCoordinates implements IGeoCoordinates{
 
     private double Latitude;
@@ -19,5 +21,14 @@ public class GeoCoordinates implements IGeoCoordinates{
     @Override
     public double getLongitude() {
         return Longitude;
+    }
+
+    @Override
+    public JSONObject getObject(){
+        JSONObject o1 = new JSONObject();
+        o1.put("latitude", this.Latitude);
+        o1.put("longitude" , this.Longitude);
+        return o1;
+
     }
 }

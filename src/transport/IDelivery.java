@@ -28,5 +28,6 @@ public interface IDelivery extends IExporter {
     void end() throws DeliveryException;
 
     double getCurrentWeight();
+    IDriver getDriver();
 }
 

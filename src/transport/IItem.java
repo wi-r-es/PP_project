@@ -2,6 +2,7 @@ package transport;
 
 import hr.ICustomer;
 import hr.IDestination;
+import org.json.simple.JSONObject;
 
 public interface IItem extends IBox {
     String getReference();
@@ -21,5 +22,7 @@ public interface IItem extends IBox {
     ItemStatus getStatus();
 
     void setStatus(ItemStatus var1);
+
+    JSONObject getObject();
 }
 
