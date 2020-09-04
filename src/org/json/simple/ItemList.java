@@ -1,4 +1,9 @@
+/*
+ * Nome: Jose Paulo Nogueira Machado
+ * Número: 8180192
+ */
 package org.json.simple;
+
 
 import java.util.ArrayList;
 import java.util.List;

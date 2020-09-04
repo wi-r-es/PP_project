@@ -1,3 +1,7 @@
+/*
+ * Nome: Jose Paulo Nogueira Machado
+ * Número: 8180192
+ */
 import java.util.Scanner;
 
 public class Main {
@@ -30,11 +34,11 @@ public class Main {
         System.out.println("\n\n");
         System.out.println("Choose option");
         System.out.println("-------------------------");
-        System.out.println("1 - Add new place");
-        System.out.println("2 - Get place");
-        System.out.println("3 - Delete place");
-        System.out.println("4 - Show all places");
-        System.out.println("0 - Quit");
+        System.out.println("1 - ");
+        System.out.println("2 - ");
+        System.out.println("3 -  ");
+        System.out.println("4 - Export data");
+        System.out.println("0 - ");
 
         selection = input.nextInt();
         return selection;

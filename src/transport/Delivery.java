@@ -1,10 +1,17 @@
+/*
+ * Nome: Jose Paulo Nogueira Machado
+ * Número: 8180192
+ */
+
 package transport;
+
 
 import exceptions.DeliveryException;
 import hr.IDestination;
 import hr.IDriver;
 import hr.LicenseType;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -308,25 +315,61 @@ public class Delivery implements IDelivery, Serializable {
 
     @Override //For items
     public void export(String var1) throws IOException {
-        try( FileWriter writer = new FileWriter("/home/wires/Documents/PP_project/test.txt",true);) {
+        try( FileWriter writer = new FileWriter("files/delivery.txt",true);) {
             //Serialize an object to a specific format that can be stored.
-            //String items = JSONArray.toJSONString(Arrays.asList(arrraytest));
-            writer.write("[");
-            for (int i = 0; i < ItemsPacked.length; i++) {
-                writer.write(ItemsPacked[i].getObject().toString());
-                if ( i+1 < ItemsPacked.length){
-                    writer.write(",");}
+            writer.write(this.getObject().toJSONString());
+            writer.write("["); writer.write("items");
 
-            }
-            writer.write("]");
+            JSONArray.writeJSONString(Arrays.asList(this.getRemainingItems()), writer);
+            writer.write("]" );
 
-        }catch (IOException e){
+
+        }catch(ArrayIndexOutOfBoundsException e){
+            System.err.println("Index out of bounds...");
+        }
+        catch (IOException e){
             System.err.println(e.getMessage());
         }
 
     }
+    public JSONObject getObject(){
+        JSONObject o1 = new JSONObject();
+        o1.put("delivery id", this.getId());
+        o1.put("currentweight", (this.getCurrentWeight()));
+        return o1;
 
+    }
     public void exportTransportationTypes(String var1) throws IOException {
+        try( FileWriter writer = new FileWriter("files/delivery.txt",true);) {
+            //Serialize an object to a specific format that can be stored.
+            writer.write(this.getObject().toJSONString());
+            writer.write("["); writer.write("items");
+            IItem[] tempItem = new IItem[MAXITEMSDELIVERY];
+            int count =0;
+            for (TransportationTypes tempTT : TransportationTypes.values() ){
+                for (IItem temp : ItemsPacked){
+                    TransportationTypes[] tempTTArr= temp.getTransportationTypes();
+                    for (int i=0; i<tempTTArr.length ; i++){
+                        if ( tempTTArr[i].equals(tempTT) ){
+                            for (int j = 0; j < tempItem.length; j++) {
+                                if (tempItem[j].equals(temp)){
+                                    break;
+                                }
+                            }
+                            tempItem[count++] = temp;
+                        }
+                    }
+                }
+            }
+            JSONArray.writeJSONString(Arrays.asList(tempItem), writer);
+            writer.write("]" );
 
+
+        }catch(ArrayIndexOutOfBoundsException e){
+            System.err.println("Index out of bounds...");
+        }
+        catch (IOException e){
+            System.err.println(e.getMessage());
+        }
     }
 }

@@ -1,4 +1,10 @@
+
+/*
+ * Nome: Jose Paulo Nogueira Machado
+ * Número: 8180192
+ */
 package transport;
+
 
 import hr.ICustomer;
 import hr.IDestination;
@@ -8,7 +14,7 @@ public class Item implements IItem {
 
     private final String Reference;
     private String Description;
-    private TransportationTypes[] TransportationType;
+    private TransportationTypes[] transportationTypes;
     private ICustomer Customer;
     private IDestination Destination;
     private ItemStatus ItemStatus;
@@ -24,7 +30,7 @@ public class Item implements IItem {
     public Item (IItem item ){
         Reference = item.getReference();
         Description = item.getDescription();
-        TransportationType = item.getTransportationTypes();
+        transportationTypes = item.getTransportationTypes();
         Customer = item.getCustomer();
         Destination = item.getDestination();
         ItemStatus = item.getStatus();
@@ -38,7 +44,7 @@ public class Item implements IItem {
     public Item(String reference, String description, transport.TransportationTypes[] transportationTypes, ICustomer customer, IDestination destination, int depth, int height, int length, int volume, double weight) {
         Reference = reference;
         Description = description;
-        TransportationType = transportationTypes;
+        this.transportationTypes = transportationTypes;
         Customer = customer;
         Destination = destination;
         ItemStatus = transport.ItemStatus.NON_DELIVERED;
@@ -63,7 +69,7 @@ public class Item implements IItem {
     @Override
     public TransportationTypes[] getTransportationTypes() {
 
-        return TransportationType;
+        return transportationTypes;
     }
 
     @Override
@@ -117,7 +123,8 @@ public class Item implements IItem {
         JSONObject o1 = new JSONObject();
         o1.put("reference", this.Reference);
         o1.put("description" , this.Description);
-        o1.put("transportation type", this.TransportationType );
+        o1.put("customer" , this.getCustomer().getObject());
+        o1.put("transportation type", this.transportationTypes);
         o1.put("destination", this.Destination.getObject());
         o1.put("depth", this.Depth);
         o1.put("height", this.Height);
@@ -127,6 +134,7 @@ public class Item implements IItem {
         return o1;
 
     }
+
 
 
 }

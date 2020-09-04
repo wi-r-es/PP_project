@@ -1,4 +1,10 @@
+/*
+ * Nome: Jose Paulo Nogueira Machado
+ * Número: 8180192
+ */
+
 package transport;
+
 
 import exceptions.DeliveryException;
 import exceptions.ManagementException;
@@ -6,6 +12,11 @@ import hr.ICustomer;
 import hr.IDestination;
 import hr.IDriver;
 import hr.LicenseType;
+import org.json.simple.JSONArray;
+
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Serializable;
 
 
 import java.util.Arrays;
@@ -697,11 +708,39 @@ public class Management implements IManagement {
         }
         throw new DeliveryException();
     }
-/*
-            • Represente uma folha de acompanhamento de um entrega (Delivery) com indicação dos itens a entregar em cada destinatário;
-            • Resumo dos itens a entregar por tipo de transporte (TransportationTypes);
-            • Resumo do estado da frota de veículos;
-            • Resumo do estado dos condutores.
- */
+
+    public void exportFleet(String var1) throws IOException {
+        try(FileWriter writer = new FileWriter("files/delivery.txt",true);) {
+            //Serialize an object to a specific format that can be stored.
+            writer.write("["); writer.write("Vehicles");
+
+            JSONArray.writeJSONString(Arrays.asList(VehiclesList), writer);
+            writer.write("]" );
+
+
+        }catch(ArrayIndexOutOfBoundsException e){
+            System.err.println("Index out of bounds...");
+        }
+        catch (IOException e){
+            System.err.println(e.getMessage());
+        }
+    }
+    public void exportDrivers(String var1) throws IOException {
+        try(FileWriter writer = new FileWriter("files/delivery.txt",true);) {
+            //Serialize an object to a specific format that can be stored.
+            writer.write("["); writer.write("Vehicles");
+
+            JSONArray.writeJSONString(Arrays.asList(DriversList), writer);
+            writer.write("]" );
+
+
+        }catch(ArrayIndexOutOfBoundsException e){
+            System.err.println("Index out of bounds...");
+        }
+        catch (IOException e){
+            System.err.println(e.getMessage());
+        }
+    }
+
 
 }

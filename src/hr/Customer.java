@@ -1,4 +1,9 @@
+/*
+ * Nome: Jose Paulo Nogueira Machado
+ * Número: 8180192
+ */
 package hr;
+
 
 import org.json.simple.JSONObject;
 
@@ -23,5 +28,6 @@ public class Customer extends Person implements ICustomer{
         o1.put("id", this.getId());
         o1.put("name", this.getName());
         o1.put("vat", this.getVat());
+        return o1;
     }
 }
