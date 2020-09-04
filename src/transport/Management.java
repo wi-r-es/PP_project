@@ -154,7 +154,7 @@ public class Management implements IManagement {
                 int[] ItemsIndexes = new int[25];
                 for( int i =0; i< ItemsList.length ; i++){
                     if ( ItemsList[i].getCustomer().equals(var1) ){
-                        ItemsIndexes[numOfItems++]=i; // so e incrementado depois de adicionado ?
+                        ItemsIndexes[numOfItems++]=i;
                     }
                 }
                 IItem[] ItemsCopy = new IItem[numOfItems];
@@ -296,7 +296,7 @@ public class Management implements IManagement {
                                     Arrays.sort(VehiclesList, i - 1, VehiclesList.length); i--;
                                 }
                                 if ( i==VehiclesList.length-1 ){
-                                    VehiclesList = Arrays.copyOf(VehiclesList, VehiclesList.length+1); //does this work correctly?
+                                    VehiclesList = Arrays.copyOf(VehiclesList, VehiclesList.length+1);
                                     VehiclesList[VehiclesList.length-1] = var1;
                                     return true;
                                 }
@@ -345,7 +345,7 @@ public class Management implements IManagement {
                                 } else {Arrays.sort(DriversList, i-1 , DriversList.length); i--;}
                             }
                             if ( i==DriversList.length-1 ){
-                                DriversList = Arrays.copyOf(DriversList, DriversList.length+1); //does this work correctly?
+                                DriversList = Arrays.copyOf(DriversList, DriversList.length+1);
                                 DriversList[DriversList.length-1] = var1;
                                 return true;
                             }
@@ -534,12 +534,18 @@ public class Management implements IManagement {
         return null;
     }
 
+    /**
+     * Adds a new delivery in the system. All Items of the delivery must have previously been created in the system and must have a ASSIGNED.
+     * @param var1 delivery to be inserted in the system
+     * @return true if the delivery is inserted, false if the delivery already exists
+     *
+     * **/
     @Override
     public boolean addDelivery(IDelivery var1) throws ManagementException {
         if (var1==null){ System.err.println("Parameter is null...");}
         else{
             if (var1.isEmpty()) {
-                throw new ManagementException("Delivery is empty..."); //or the items cannot be stored inside the vehicle ??? how the fuck | something com o load mb?
+                throw new ManagementException("Delivery is empty...");
             }
             try {
                 IItem[] Itemstemp = var1.getRemainingItems();
@@ -604,7 +610,7 @@ public class Management implements IManagement {
                                     } else {Arrays.sort(ItemsList, i-1 , ItemsList.length); i--;}
                                 }
                                 if ( i==DeliveriesList.length-1 ){
-                                    DeliveriesList = Arrays.copyOf(DeliveriesList, DeliveriesList.length+1); //does this work correctly?
+                                    DeliveriesList = Arrays.copyOf(DeliveriesList, DeliveriesList.length+1);
                                     DeliveriesList[DeliveriesList.length-1] = var1;
                                     return true;
                                 }
@@ -622,7 +628,12 @@ public class Management implements IManagement {
         }
         return false;
     }
-
+    /**
+     * Confirms a delivered item. The item must have a state of ASSIGNED. Item status is changed to DELIVERED
+     * @param var1 delivery ID
+     * @param var2 items reference
+     *
+     * **/
     @Override
     public void deliveredItem(String var1, String var2) throws Exception {
         if ( var1==null || var2==null ) { throw new Exception("Parameter is null...");}
@@ -644,7 +655,12 @@ public class Management implements IManagement {
             System.err.println("Error trying to access Item/Delivery");
         }
     }
-
+    /**
+     * Confirms delivered items to a given destination. The items must have a previous state of ASSIGNED. Items status is changed to DELIVERED
+     * @param var1 delivery ID
+     * @param var2 items destination
+     *
+     * **/
     @Override
     public void deliveredItem(String var1, IDestination var2) throws Exception {
         if ( var1==null || var2==null ) { throw new Exception("Parameter is null...");}
@@ -666,7 +682,12 @@ public class Management implements IManagement {
             System.err.println("Error trying to access Item/Delivery");
         }
     }
-
+    /**
+     * Checks the status of an item in the system
+     * @param var1 reference of an unique item
+     * @return item status or null
+     *
+     * **/
     @Override
     public ItemStatus checkItemStatus(String var1) throws Exception {
         try{
@@ -681,6 +702,12 @@ public class Management implements IManagement {
         return null;
     }
 
+    /**
+     * Starts a delivery
+     * @param var1 ID of an Delivery
+     *
+     *
+     * **/
     @Override
     public void startDelivery(String var1) throws DeliveryException {
         try {
@@ -695,6 +722,12 @@ public class Management implements IManagement {
         throw new DeliveryException(); // confirmar com neves/javadocs
     }
 
+    /**
+     * Stops a delivery
+     * @param var1 ID of an Delivery
+     *
+     *
+     * **/
     @Override
     public void stopDelivery(String var1) throws DeliveryException {
         try{
@@ -709,6 +742,12 @@ public class Management implements IManagement {
         throw new DeliveryException();
     }
 
+    /**
+     * Exports the data of all vehicles in the system to JSON
+     * @param var1 path to where the file is going to be written
+     *
+     *
+     * **/
     public void exportFleet(String var1) throws IOException {
         try(FileWriter writer = new FileWriter("files/delivery.txt",true);) {
             //Serialize an object to a specific format that can be stored.
@@ -725,6 +764,11 @@ public class Management implements IManagement {
             System.err.println(e.getMessage());
         }
     }
+    /**
+     * Exports the data of all drivers in the system to JSON
+     * @param var1 path to where the file is going to be written
+     *
+     * **/
     public void exportDrivers(String var1) throws IOException {
         try(FileWriter writer = new FileWriter("files/delivery.txt",true);) {
             //Serialize an object to a specific format that can be stored.

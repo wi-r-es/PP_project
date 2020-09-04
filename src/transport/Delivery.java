@@ -66,7 +66,7 @@ public class Delivery implements IDelivery, Serializable {
                     boolean allLicensesCheck = false;
                     try{
                         for (int i=0; i< tempV.length ; i++){
-                            allLicensesCheck = var2.haveLicense(tempV[i]);  //esta bem pensado ?
+                            allLicensesCheck = var2.haveLicense(tempV[i]);
                         }
                     } catch (ArrayIndexOutOfBoundsException e){
                             System.err.println("Index Out Of Bounds...");
@@ -88,6 +88,14 @@ public class Delivery implements IDelivery, Serializable {
         return this.Vehicle;
     }
 
+/**
+ * Returns an boolean value whether the item is load or not
+ * Throws DeliveryException - if: any parameter is null ;item status is not NON_DELIVERED ;if no vehicle and/or driver are assigned; the vehicle status is different from in preparation; if some item is outside (or is overflowing) the delivery or if some item is overlapping with other item; if weight is exceeded ;if transportation restrictions of the current are not valid for the item
+ * @param  var1  an item object to be stored
+ * @param  var2 the position where the items is set to be stored
+ * @return true if item can be loaded, without object collision with other items; if it hasn't enough space, one more space will be created , returns false if item already exists in delivery
+ *
+ * **/
     @Override
     public boolean load(IItem var1, IPosition var2) throws DeliveryException {
         try{
@@ -98,7 +106,7 @@ public class Delivery implements IDelivery, Serializable {
                 updateCurrentWeight();
                 if (getCurrentWeight() >= getVehicle().getMaxWeight()) {
                     throw new DeliveryException("Weight exceeds Limits...");
-                } else if (Arrays.deepEquals(this.getVehicle().getTransportationTypes(), var1.getTransportationTypes())) { //does this work like i think it does??
+                } else if (Arrays.deepEquals(this.getVehicle().getTransportationTypes(), var1.getTransportationTypes())) {
                     if (!isEmpty()) {
                         try{
                             for (IItem tempItem : ItemsPacked) {
@@ -129,7 +137,7 @@ public class Delivery implements IDelivery, Serializable {
                             }
                     } // Delivery is Empty || Objects don't Collide
                     if ( insidePosition==ItemsPacked.length-1 ){
-                        ItemsPacked = Arrays.copyOf(ItemsPacked, ItemsPacked.length+1); //does this work correctly?
+                        ItemsPacked = Arrays.copyOf(ItemsPacked, ItemsPacked.length+1);
                         ItemsPacked[ItemsPacked.length-1] = var1;
                         ItemsPacked[++insidePosition].setStatus(ItemStatus.ASSIGNED);
                         return true;
@@ -148,7 +156,14 @@ public class Delivery implements IDelivery, Serializable {
     }
 
 
-
+    /**
+     * Returns an boolean value whether the item is load or not
+     * Throws DeliveryException - if: any parameter is null ;item status is not NON_DELIVERED ;if no vehicle and/or driver are assigned; the vehicle status is different from in preparation; if some item is outside (or is overflowing) the delivery or if some item is overlapping with other item; if weight is exceeded ;if transportation restrictions of the current are not valid for the item
+     * @param  var1  an item object to be stored
+     * @param  var2 the position where the items is set to be stored
+     * @return true if item can be loaded, without object collision with other items; if it hasn't enough space, one more space will be created , returns false if item already exists in delivery
+     *
+     * **/
     @Override
     public boolean unload(IItem var1, ItemStatus var2) throws DeliveryException {
         if( getDriver()==null || getVehicle()==null ) {
@@ -179,6 +194,13 @@ public class Delivery implements IDelivery, Serializable {
         } return false;
     }
 
+    /**
+     * Returns an boolean value whether the item is unload or not
+     * @param  var1  an destination of the items bo be unload
+     * @param  var2 the status to assigned the items after they are successfully unload
+     * @return true if item is unload , returns false if item doesn't exist in delivery
+     *
+     * **/
     @Override
     public boolean unload(IDestination var1, ItemStatus var2) throws DeliveryException {
         if( getDriver()==null || getVehicle()==null){
@@ -213,12 +235,21 @@ public class Delivery implements IDelivery, Serializable {
             return false;
         }
     }
-
+    /**
+     * Returns an boolean value whether the delivery has items or not
+     * @return true if delivery is empty , returns false delivery isn't empty
+     *
+     * **/
     @Override
     public boolean isEmpty() {
         return insidePosition == 0;
     }
-
+    /**
+     * Returns all the remaining items in delivery
+     *
+     * @return null in case there is no items remaining or an error has occurred; or return an array with the remaining items to be delivered
+     *
+     * **/
     @Override
     public IItem[] getRemainingItems() {
         if (isEmpty()) {
@@ -239,6 +270,12 @@ public class Delivery implements IDelivery, Serializable {
         } return null;
     }
 
+    /**
+     * Returns all the remaining destinations in delivery
+     *
+     * @return null in case there is no destinations remaining or an error has occurred; or return an array with the remaining destinations with items yet to be delivered
+     *
+     * **/
     @Override
     public IDestination[] getRemainingDestinations() {
         try{
@@ -249,8 +286,8 @@ public class Delivery implements IDelivery, Serializable {
             Arrays.sort(DestinationTemp);
             IDestination current = DestinationTemp[0];
             boolean found = false;
-            for (int i = 1; i < DestinationTemp.length; i++) {    // tou a fazer este loop para apagar os elementos repetidos bem ?
-                if (current.equals(DestinationTemp[i]) && !found) { //este equals chega?
+            for (int i = 1; i < DestinationTemp.length; i++) {
+                if (current.equals(DestinationTemp[i]) && !found) {
                     DestinationTemp[i]= null;
                     found = true;
                 } else if (current != DestinationTemp[i]) {
@@ -265,6 +302,7 @@ public class Delivery implements IDelivery, Serializable {
         }
         return null;
     }
+
 
     @Override
     public void start() throws DeliveryException {
@@ -313,9 +351,16 @@ public class Delivery implements IDelivery, Serializable {
         return Driver;
     }
 
+
+    /**
+     * Exports the data of a delivery to JSON
+     * @param var1 path to where the file is going to be written
+     * @return void
+     *
+     * **/
     @Override //For items
     public void export(String var1) throws IOException {
-        try( FileWriter writer = new FileWriter("files/delivery.txt",true);) {
+        try( FileWriter writer = new FileWriter(var1,true);) {
             //Serialize an object to a specific format that can be stored.
             writer.write(this.getObject().toJSONString());
             writer.write("["); writer.write("items");
@@ -339,6 +384,12 @@ public class Delivery implements IDelivery, Serializable {
         return o1;
 
     }
+    /**
+     * Exports the data of a delivery to JSON, based on transportation types
+     * @param var1 path to where the file is going to be written
+     * @return void
+     *
+     * **/
     public void exportTransportationTypes(String var1) throws IOException {
         try( FileWriter writer = new FileWriter("files/delivery.txt",true);) {
             //Serialize an object to a specific format that can be stored.
